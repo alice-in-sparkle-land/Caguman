@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3B7A4D">
+<title>Sổ chi tiêu chuyến đi</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%23B8352A'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='white' font-family='serif' font-weight='700'%3E%E5%B8%B3%3C/text%3E%3C/svg%3E">
+<style>
+/*CSS*/
+</style>
+</head>
+<body>
+<div id="banner" class="banner hidden" role="alert"></div>
+<header class="hd" id="hd">
+  <img id="hdImg" alt="">
+  <div class="hdtx">
+    <button class="stamp" data-act="tripSwitch" aria-label="Chọn chuyến đi">帳</button>
+    <button class="hdmain" data-act="tripSwitch"><div class="ttl" id="hdTitle"></div><div class="sub" id="hdSub"></div></button>
+  </div>
+  <button class="sdbtn" data-act="syncDot" aria-label="Trạng thái đồng bộ"><span id="sdot" class="sdot hidden"></span></button>
+</header>
+<main class="wrap" id="main"></main>
+<nav class="tabs" id="tabs">
+  <button class="tab" data-act="tab" data-tab="ledger"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Sổ</button>
+  <button class="tab" data-act="tab" data-tab="balance"><svg viewBox="0 0 24 24"><path d="M4 8h15l-4-4M20 16H5l4 4"/></svg>Cân bằng</button>
+  <button class="fab" data-act="add" aria-label="Thêm khoản chi"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="tab" data-act="tab" data-tab="trips"><svg viewBox="0 0 24 24"><path d="M3 19l6-9 4 5 3-4 5 8z"/></svg>Chuyến</button>
+  <button class="tab" data-act="tab" data-tab="settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Cài đặt</button>
+</nav>
+<div id="scrim" class="scrim hidden"></div>
+<section id="sheet" class="sheet hidden" role="dialog" aria-modal="true" tabindex="-1"></section>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<input type="file" id="fileIn" accept=".json,application/json" multiple hidden>
+<script>
+/*JS*/
+</script>
+</body>
+</html>

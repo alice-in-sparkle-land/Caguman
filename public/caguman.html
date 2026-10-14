@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3B7A4D">
+<title>Sổ chi tiêu chuyến đi</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%23B8352A'/%3E%3Ctext x='32' y='45' font-size='36' text-anchor='middle' fill='white' font-family='serif' font-weight='700'%3E%E5%B8%B3%3C/text%3E%3C/svg%3E">
+<style>
+:root{--serif:"Noto Serif",Georgia,serif;--sans:system-ui,Roboto,"Segoe UI",sans-serif;--mono:ui-monospace,"Roboto Mono",monospace;
+--bg:#EFE9DD;--paper:#FFFDF8;--ink:#1E2733;--mut:#6B7280;--line:#E4DDCF;--ac:#3B7A4D;--ac2:#C6613A;--acSoft:#E6EFE8;--pos:#2F7A4F;--neg:#B6463A;--stamp:#B8352A}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.4;min-height:100vh;padding-bottom:calc(104px + env(safe-area-inset-bottom));overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
+.hidden{display:none!important}
+
+/* header */
+.hd{position:relative;height:250px;overflow:hidden;background:#C9DFCB}
+.hd img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center bottom}
+.hdtx{position:absolute;left:16px;right:16px;top:calc(18px + env(safe-area-inset-top));display:flex;align-items:flex-start;gap:12px;color:#1E2733}
+.hd.dk .hdtx{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.stamp{position:relative;flex:none;width:42px;height:42px;border-radius:9px;background:var(--stamp);color:#fff;font:700 23px var(--serif);display:grid;place-items:center;transform:rotate(-4deg);box-shadow:0 2px 0 rgba(0,0,0,.12);text-shadow:none}
+.hdmain{flex:1;min-width:0;color:inherit}
+.ttl{font:600 22px/1.2 var(--serif);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub{font-size:13px;opacity:.82;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sdbtn{position:absolute;left:40px;top:calc(12px + env(safe-area-inset-top));width:24px;height:24px;display:grid;place-items:center}
+.sdot{width:11px;height:11px;border-radius:50%;border:2px solid #fff;background:#9AA0A6;display:inline-block;flex:none}
+.sdot.s-ok{background:#3BA55C}.sdot.s-busy{background:#E8A23A}.sdot.s-offline,.sdot.s-off{background:#9AA0A6}
+.sdot.s-pin,.sdot.s-locked,.sdot.s-error,.sdot.s-server,.sdot.s-setup,.sdot.s-foreign,.sdot.s-bad,.sdot.s-noserver{background:#D9483B}
+.sdot.inl{border-color:transparent}
+.banner{background:#B6463A;color:#fff;font-size:13px;padding:8px 16px;text-align:center}
+
+/* receipt */
+.wrap{position:relative;margin-top:-84px;padding:0 12px;max-width:520px;margin-left:auto;margin-right:auto}
+.rc{position:relative;background:var(--paper);padding:10px 18px 18px;margin:12px 4px 26px;box-shadow:0 18px 30px -24px rgba(30,39,51,.55)}
+.rc:before,.rc:after{content:"";position:absolute;left:0;right:0;height:10px;background:linear-gradient(-45deg,var(--paper) 6px,transparent 0),linear-gradient(45deg,var(--paper) 6px,transparent 0);background-size:12px 12px}
+.rc:before{top:-10px;background-position:left bottom}
+.rc:after{bottom:-10px;transform:rotate(180deg)}
+.rh{text-align:center;padding:10px 0 4px}
+.eyebrow{font:700 11.5px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ac)}
+.h2{font:600 24px var(--serif);margin:6px 0 4px}
+.big{font:600 32px var(--mono);margin-top:6px;letter-spacing:-.01em}
+.big i{font-style:normal;font-size:18px;color:var(--mut)}
+.dash{border-top:1.5px dashed var(--line);margin:14px 0}
+.lbl{font:700 11.5px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+.sm{font-size:13.5px;color:var(--mut);margin-top:6px}
+.c{text-align:center}
+.hint{font-size:12.5px;color:var(--mut);margin-top:8px}
+.empty,.settled{text-align:center;color:var(--mut);font-size:13.5px;padding:14px 0;font-style:italic}
+.foot{text-align:center;font:700 11px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--ac2);margin-top:14px}
+.note{font-size:13px;color:var(--mut);text-align:center;margin:-12px 8px 18px}
+.note.bad{color:var(--neg);margin:12px 4px}
+.mt8{margin-top:8px}
+.row{display:flex;align-items:center;gap:10px}.sp{flex:1;min-width:0;font-size:14px}
+
+/* list rows */
+.day{display:flex;justify-content:space-between;font:600 12px var(--mono);color:var(--mut);margin:14px 0 2px;letter-spacing:.02em}
+.day:first-of-type{margin-top:4px}
+.it,.pb,.trip{display:flex;gap:12px;align-items:center;width:100%;padding:10px 0;border-top:1px solid var(--line);text-align:left}
+.day+.it{border-top:0}
+.it .t,.pb .t,.trip .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.d{font-weight:600;overflow-wrap:anywhere}
+.m{font-size:12.5px;color:var(--mut);margin-top:1px;overflow-wrap:anywhere}
+.a{font:600 14.5px var(--mono);white-space:nowrap}
+.v{font:600 15px var(--mono);white-space:nowrap}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.go{font-size:13px;color:var(--ac);font-weight:600}
+.av{width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-weight:700;font-size:14px;flex:none}
+.av.sm{width:24px;height:24px;font-size:11.5px}
+.trip{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:8px}
+.trip.on{border-color:var(--ac);background:var(--acSoft)}
+.badge{font-size:11.5px;font-weight:700;color:var(--ac);white-space:nowrap}
+.tr{display:flex;align-items:center;gap:7px;width:100%;background:var(--bg);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:14px;text-align:left}
+.tr>.av,.tr .arr{flex:none}
+.tr .nm{flex:0 1 auto;min-width:1.5em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr .x{flex:none;margin-left:auto;padding-left:6px;font:600 14px var(--mono);white-space:nowrap}
+.arr{color:var(--ac2);font-weight:700}
+.log{font:12px var(--mono);color:var(--mut);background:var(--bg);border-radius:8px;padding:8px 10px;margin-top:8px;max-height:150px;overflow:auto;overflow-wrap:anywhere}
+.fl{display:flex;flex-direction:column;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}.fl span{color:var(--mut)}.fl.bad span{color:var(--neg)}
+
+/* controls */
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btns.col{flex-direction:column}
+.btn{min-height:44px;padding:0 16px;border-radius:999px;background:var(--ac);color:#fff;font-weight:600;font-size:14.5px;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+.btns:not(.col) .btn{flex:1 1 auto}
+.btn.g{background:transparent;color:var(--ac);border:1.5px solid var(--ac)}
+.btn.d{background:transparent;color:var(--neg);border:1.5px solid #E2B4AE}
+.btn:disabled{opacity:.5}
+.link{color:var(--ac);font-weight:600;text-decoration:underline;text-underline-offset:2px;font-size:inherit;padding:0 2px}
+.fld{margin-top:14px}
+.fld label,.flab{display:flex;justify-content:space-between;align-items:baseline;font:700 11.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+.flab .link{font:600 12.5px var(--sans);letter-spacing:0;text-transform:none}
+.in{width:100%;min-height:46px;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;font:16px var(--sans);color:var(--ink);min-width:0}
+.in:focus{outline:none;border-color:var(--ac)}
+.in.amt{font:600 20px var(--mono);text-align:right}
+.ta{min-height:180px;font:12.5px var(--mono);margin-top:10px}
+.srow{display:flex;gap:8px;margin-top:10px}.srow .in{flex:1}.srow .btn{flex:none}
+.fld .srow{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:4px 12px 4px 5px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:600;font-size:14px;opacity:.6;max-width:100%}
+.chip span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip.on{opacity:1;border-color:var(--ac);background:var(--acSoft)}
+.dot{width:34px;height:34px;border-radius:50%;border:3px solid transparent;box-shadow:0 0 0 1px var(--line)}
+.dot.on{border-color:#fff;box-shadow:0 0 0 2.5px var(--ink)}
+.err{color:var(--neg);font-size:13.5px;margin-top:10px;min-height:1px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.seg button{flex:1 1 auto;min-height:40px;padding:0 10px;border-radius:999px;border:1.5px solid var(--line);font-size:13.5px;font-weight:600;text-align:center;background:#fff}
+.seg button.on{border-color:var(--ac);background:var(--acSoft);color:var(--ac)}
+.tog{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:6px 0;text-align:left}
+.tog .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.sw{flex:none;width:46px;height:28px;border-radius:999px;background:#CFC8BA;position:relative;transition:background .2s}
+.sw:after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+.tog.on .sw{background:var(--ac)}.tog.on .sw:after{transform:translateX(18px)}
+
+/* tabs */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;height:calc(66px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--paper);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;width:68px;font-size:11.5px;color:var(--mut);text-align:center}
+.tab svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--ac);font-weight:700}
+.fab{width:58px;height:58px;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;margin-top:-30px;box-shadow:0 8px 18px -6px rgba(0,0,0,.4)}
+.fab svg{width:28px;height:28px;stroke:#fff;stroke-width:2.4;stroke-linecap:round;fill:none}
+
+/* sheet */
+.scrim{position:fixed;inset:0;z-index:30;background:rgba(20,24,30,.42);opacity:0;transition:opacity .2s}
+.scrim.open{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;max-height:90vh;overflow-y:auto;overscroll-behavior:contain;background:var(--paper);border-radius:20px 20px 0 0;padding:6px 18px calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .22s ease-out;max-width:560px;margin:0 auto;outline:none}
+.sheet.open{transform:none}
+.sh-h{position:sticky;top:-6px;z-index:2;background:var(--paper);display:flex;align-items:center;gap:10px;padding:14px 0 6px}
+.sh-t{flex:1;font:600 19px var(--serif)}
+.shx{width:40px;height:40px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:16px;color:var(--mut)}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));z-index:40;transform:translate(-50%,16px);opacity:0;background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;max-width:88vw;text-align:center;pointer-events:none;transition:opacity .2s,transform .2s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* lite mode: no motion */
+body.lite *,body.lite *:before,body.lite *:after{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (min-width:600px){.hd{height:280px}}
+
+</style>
+</head>
+<body>
+<div id="banner" class="banner hidden" role="alert"></div>
+<header class="hd" id="hd">
+  <img id="hdImg" alt="">
+  <div class="hdtx">
+    <button class="stamp" data-act="tripSwitch" aria-label="Chọn chuyến đi">帳</button>
+    <button class="hdmain" data-act="tripSwitch"><div class="ttl" id="hdTitle"></div><div class="sub" id="hdSub"></div></button>
+  </div>
+  <button class="sdbtn" data-act="syncDot" aria-label="Trạng thái đồng bộ"><span id="sdot" class="sdot hidden"></span></button>
+</header>
+<main class="wrap" id="main"></main>
+<nav class="tabs" id="tabs">
+  <button class="tab" data-act="tab" data-tab="ledger"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Sổ</button>
+  <button class="tab" data-act="tab" data-tab="balance"><svg viewBox="0 0 24 24"><path d="M4 8h15l-4-4M20 16H5l4 4"/></svg>Cân bằng</button>
+  <button class="fab" data-act="add" aria-label="Thêm khoản chi"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="tab" data-act="tab" data-tab="trips"><svg viewBox="0 0 24 24"><path d="M3 19l6-9 4 5 3-4 5 8z"/></svg>Chuyến</button>
+  <button class="tab" data-act="tab" data-tab="settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Cài đặt</button>
+</nav>
+<div id="scrim" class="scrim hidden"></div>
+<section id="sheet" class="sheet hidden" role="dialog" aria-modal="true" tabindex="-1"></section>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<input type="file" id="fileIn" accept=".json,application/json" multiple hidden>
+<script>
+'use strict';
+/* ===== data.js — storage, sanitizers, state, formatting ===== */
+const APP_ID = 'caguman';
+const VERSION = '1.0 · 2026-10-14';
+const LS_KEY = 'cgm.v1', LS_DEV = 'cgm.dev', LS_VIS = 'cgm.vis', LS_DIAG = 'cgm.diag';
+const DEFAULT_SERVER = 'https://caguman.emile-cao.workers.dev';
+const SYNC_COLS = ['trips', 'members', 'expenses', 'payments'];
+const PALETTE = ['#1D7898', '#C6613A', '#3B7A4D', '#7A4B8F', '#B8862B', '#B6463A', '#4569B3', '#5E7D2E'];
+const MAX = { trips: 500, members: 3000, expenses: 30000, payments: 10000 };
+
+/* ---------- storage ---------- */
+let STORAGE_OK = true;
+function lsGet(k) {
+  try { return localStorage.getItem(k); } catch (e) { STORAGE_OK = false; return null; }
+}
+function lsSet(k, v) {
+  try { localStorage.setItem(k, v); return true; }
+  catch (e) { STORAGE_OK = false; if (typeof storageBanner === 'function') storageBanner(); return false; }
+}
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+
+/* ---------- sanitizers ---------- */
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+const sStr = (v, n = 200) => typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f\u2028\u2029]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n) : '';
+const sId = v => typeof v === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(v) ? v : '';
+const sNum = (v, min, max, d) => { const n = typeof v === 'string' && v.trim() === '' ? NaN : Number(v); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : d; };
+const sTs = v => Math.round(sNum(v, 0, 4102444800000, 0));
+const sBool = v => v === true || v === 1;
+const sDate = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00')) ? v : '';
+const sAmt = v => { const n = Math.round(sNum(v, 0, 1e12, 0)); return n > 0 ? n : 0; };
+function sDel(o) {
+  const out = {}, cut = Date.now() - 400 * 864e5;
+  if (isObj(o)) for (const k of Object.keys(o).sort()) { if (!sId(k)) continue; const t = sTs(o[k]); if (t > cut) out[k] = t; }
+  return out;
+}
+function sTrip(x) {
+  if (!isObj(x)) return null;
+  const id = sId(x.id), name = sStr(x.name, 60);
+  if (!id || !name) return null;
+  return { id, name, at: sTs(x.at), u: sTs(x.u) };
+}
+function sMember(x) {
+  if (!isObj(x)) return null;
+  const id = sId(x.id), trip = sId(x.trip), name = sStr(x.name, 40);
+  if (!id || !trip || !name) return null;
+  return { id, trip, name, c: Math.round(sNum(x.c, 0, PALETTE.length - 1, 0)), u: sTs(x.u) };
+}
+function sIds(a, n = 60) {
+  if (!Array.isArray(a)) return [];
+  const out = [];
+  for (const v of a) { const id = sId(v); if (id && !out.includes(id)) out.push(id); if (out.length >= n) break; }
+  return out;
+}
+function sExpense(x) {
+  if (!isObj(x)) return null;
+  const id = sId(x.id), trip = sId(x.trip), desc = sStr(x.desc, 120), amount = sAmt(x.amount), payer = sId(x.payer), split = sIds(x.split);
+  if (!id || !trip || !desc || !amount || !payer || !split.length) return null;
+  return { id, trip, desc, amount, payer, split, date: sDate(x.date), at: sTs(x.at), u: sTs(x.u) };
+}
+function sPayment(x) {
+  if (!isObj(x)) return null;
+  const id = sId(x.id), trip = sId(x.trip), from = sId(x.from), to = sId(x.to), amount = sAmt(x.amount);
+  if (!id || !trip || !from || !to || from === to || !amount) return null;
+  return { id, trip, from, to, amount, date: sDate(x.date), at: sTs(x.at), u: sTs(x.u) };
+}
+const SAN = { trips: sTrip, members: sMember, expenses: sExpense, payments: sPayment };
+function sList(arr, fn, max) {
+  if (!Array.isArray(arr)) return [];
+  const m = new Map();
+  for (const raw of arr) {
+    const x = fn(raw); if (!x) continue;
+    const o = m.get(x.id);
+    if (!o || (x.u || 0) > (o.u || 0)) m.set(x.id, x);
+    if (m.size >= max) break;
+  }
+  return [...m.values()];
+}
+function sanitizeState(o) {
+  o = isObj(o) ? o : {};
+  const st = { del: sDel(o.del) };
+  for (const col of SYNC_COLS) st[col] = sList(o[col], SAN[col], MAX[col]);
+  purgeOrphans(st);
+  return { trips: st.trips, members: st.members, expenses: st.expenses, payments: st.payments, del: st.del };
+}
+/* Items whose trip no longer exists are dropped (a trip deleted on one phone while another added to it). */
+function purgeOrphans(st) {
+  const t = new Set(st.trips.map(x => x.id));
+  for (const col of ['members', 'expenses', 'payments']) st[col] = st[col].filter(x => t.has(x.trip));
+}
+const emptyState = () => ({ trips: [], members: [], expenses: [], payments: [], del: {} });
+
+/* ---------- device-only settings (never synced, never in a backup) ---------- */
+function sDev(o) {
+  o = isObj(o) ? o : {};
+  return {
+    trip: sId(o.trip),
+    theme: ['random', 'earth', 'forest', 'sea', 'wind'].includes(o.theme) ? o.theme : 'random',
+    lite: sBool(o.lite),
+    payer: isObj(o.payer) ? Object.fromEntries(Object.entries(o.payer).filter(([k, v]) => sId(k) && sId(v)).slice(-50)) : {},
+    bkAt: sTs(o.bkAt),
+    bkN: Math.round(sNum(o.bkN, 0, 1e7, 0))
+  };
+}
+
+/* ---------- ids, numbers, dates ---------- */
+function newId() {
+  let r = '';
+  try { const a = new Uint32Array(2); crypto.getRandomValues(a); r = a[0].toString(36) + a[1].toString(36); }
+  catch (e) { r = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2); }
+  return (Date.now().toString(36) + r).replace(/[^a-z0-9]/g, '').slice(0, 20);
+}
+function fmt(n) {
+  const v = Math.round(Number(n) || 0);
+  return (v < 0 ? '−' : '') + String(Math.abs(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+const fmtSigned = n => (Math.round(n) > 0 ? '+' : '') + fmt(n);
+const digits = s => String(s || '').replace(/[^\d]/g, '').replace(/^0+(?=\d)/, '').slice(0, 12);
+const pad = n => String(n).padStart(2, '0');
+const keyOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const todayKey = () => keyOf(new Date());
+const WD = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+function fmtDay(key, short) {
+  if (!key) return 'Không rõ ngày';
+  const d = new Date(key + 'T00:00:00'), t = new Date(); t.setHours(0, 0, 0, 0);
+  const diff = Math.round((t - d) / 864e5);
+  const base = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}` + (d.getFullYear() !== t.getFullYear() ? '/' + d.getFullYear() : '');
+  if (short) return base;
+  if (diff === 0) return 'Hôm nay · ' + base;
+  if (diff === 1) return 'Hôm qua · ' + base;
+  return WD[d.getDay()] + ' · ' + base;
+}
+const dayOfItem = x => x.date || (x.at ? keyOf(new Date(x.at)) : '');
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+const initial = name => { const ch = [...String(name || '?').trim()][0] || '?'; return ch.toLocaleUpperCase('vi'); };
+
+/* ---------- diagnostics ---------- */
+let DIAG = [];
+function loadDiag() { try { const a = JSON.parse(lsGet(LS_DIAG) || '[]'); DIAG = Array.isArray(a) ? a.filter(x => isObj(x)).slice(-60).map(x => ({ t: sTs(x.t), m: sStr(x.m, 300) })) : []; } catch (e) { DIAG = []; } }
+function logDiag(m) {
+  DIAG.push({ t: Date.now(), m: sStr(String(m), 300) });
+  if (DIAG.length > 60) DIAG = DIAG.slice(-60);
+  lsSet(LS_DIAG, JSON.stringify(DIAG));
+}
+
+'use strict';
+/* ===== scene.js — Ghibli themes and the misty-hills header (drawn once as an <img>) ===== */
+const THEMES = {
+  earth:  { name: 'Đất',  sky: ['#EBC9A0', '#F7E9D4'], r: ['#E2B88E', '#CF946A', '#B0704C', '#7E4A33'], sun: '#C8452C', ac: '#B0532A', ac2: '#C99230' },
+  forest: { name: 'Rừng', sky: ['#C9DFCB', '#EFF4E7'], r: ['#AECBA8', '#84AC82', '#5C8C61', '#3B6948'], sun: '#FFFDF4', ac: '#3B7A4D', ac2: '#C6613A' },
+  sea:    { name: 'Biển', sky: ['#B8DCE8', '#EDF6F4'], r: ['#A3CEDC', '#74B2C8', '#4690B0', '#256A8C'], sun: '#FFFFFF', ac: '#1D7898', ac2: '#E0784E' },
+  wind:   { name: 'Gió',  sky: ['#CFDBF0', '#F4F2F8'], r: ['#C3CEE6', '#A6B4D7', '#8894C2', '#6772A6'], sun: '#FFFFFF', ac: '#4569B3', ac2: '#D9A32E' }
+};
+const PHASES = {
+  dawn:  { sky: ['#EDB9AC', '#FAE3CF'], tint: '#F2B3A0', k: 0.22 },
+  dusk:  { sky: ['#D98A7E', '#F4C9A6'], tint: '#6A3E62', k: 0.42 },
+  night: { sky: ['#16203D', '#34406A'], tint: '#111933', k: 0.66 }
+};
+function phaseOf(h) {
+  if (h >= 5 && h < 8) return 'dawn';
+  if (h >= 8 && h < 16) return 'day';
+  if (h >= 16 && h < 19) return 'dusk';
+  return 'night';
+}
+function rng(a) {
+  return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function mix(c1, c2, k) {
+  const p = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+  const a = p(c1), b = p(c2);
+  return '#' + a.map((v, i) => Math.round(v + (b[i] - v) * k).toString(16).padStart(2, '0')).join('');
+}
+function ridge(yBase, amp, seed, freq, W = 800, H = 440) {
+  const r = rng(seed), p = [r() * 6, r() * 6];
+  let d = `M0 ${H} L`;
+  for (let x = 0; x <= W; x += 5) {
+    const y = yBase - amp * (0.7 * Math.sin(x * freq + p[0]) + 0.3 * Math.sin(x * freq * 2.1 + p[1]));
+    d += `${x} ${y.toFixed(1)} L`;
+  }
+  return d + `${W} ${H}Z`;
+}
+function sceneSrc(theme, phase) {
+  const T = THEMES[theme], P = PHASES[phase];
+  const sky = P ? P.sky : T.sky, ridges = T.r.map(c => P ? mix(c, P.tint, P.k) : c);
+  const R = [[246, 26, .0085], [286, 22, .011], [326, 18, .014], [366, 14, .018]];
+  const mistOp = phase === 'night' ? .12 : .35;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 440" preserveAspectRatio="xMidYMax slice">` +
+    `<defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient>` +
+    `<linearGradient id="m" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="${mistOp}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>` +
+    `<rect width="800" height="440" fill="url(#s)"/>`;
+  if (phase === 'night') {
+    const r = rng(11);
+    for (let i = 0; i < 46; i++) s += `<circle cx="${(r() * 800).toFixed(0)}" cy="${(r() * 210).toFixed(0)}" r="${(r() * 1.3 + .4).toFixed(1)}" fill="#fff" opacity="${(r() * .5 + .35).toFixed(2)}"/>`;
+    s += `<circle cx="610" cy="110" r="26" fill="#F4F1E4"/><circle cx="622" cy="102" r="23" fill="${sky[0]}"/>`;
+  } else {
+    const cy = phase === 'day' ? 120 : 172, sun = phase === 'day' ? T.sun : phase === 'dawn' ? '#FFF1E2' : '#F6B486';
+    s += `<circle cx="600" cy="${cy}" r="34" fill="${sun}"/>`;
+    if (phase !== 'dusk') [[520, 90], [540, 80], [556, 96]].forEach(([x, y]) => { s += `<path d="M${x} ${y}q5 -5 10 0q5 -5 10 0" stroke="#3a3a3a" stroke-opacity=".45" fill="none" stroke-width="1.6"/>`; });
+  }
+  R.forEach(([y, a, f], i) => {
+    s += `<path d="${ridge(y, a, i * 7 + 3, f)}" fill="${ridges[i]}"/>`;
+    if (i < 3) s += `<rect x="0" y="${y + a - 10}" width="800" height="40" fill="url(#m)"/>`;
+  });
+  return 'data:image/svg+xml,' + encodeURIComponent(s + '</svg>');
+}
+
+'use strict';
+/* ===== sync.js — change stamps, merging and cloud sync =====
+   Every item carries u (time of its last change). Deleted ids go into S.del with the delete time.
+   Device prefs (current trip, theme, Lite mode, backup counters) and the PIN are never sent. */
+const LS_SYNC = 'cgm.sync';
+
+/* ---------- canonical helpers ---------- */
+function canon(v) {
+  if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
+  if (v && typeof v === 'object') return '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}';
+  return JSON.stringify(v === undefined ? null : v);
+}
+function hashStr(s) {
+  let h = 0x811c9dc5, h2 = 0;
+  for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h ^= c; h = Math.imul(h, 0x01000193); h2 = (h2 * 31 + c) | 0; }
+  return (h >>> 0).toString(36) + '.' + (h2 >>> 0).toString(36) + '.' + s.length.toString(36);
+}
+function itemKey(x) { const c = {}; for (const k in x) if (k !== 'u') c[k] = x[k]; return JSON.stringify(c); }
+
+/* ---------- change stamps ---------- */
+let SNAP = null;
+function takeSnap() {
+  const cols = {};
+  for (const col of SYNC_COLS) { const m = new Map(); for (const x of S[col]) m.set(x.id, { k: itemKey(x), u: x.u || 0 }); cols[col] = m; }
+  SNAP = { cols };
+}
+/* Changed items get u = now, removed items become delete markers. Returns true if anything changed. */
+function stampChanges() {
+  if (!SNAP) { takeSnap(); return false; }
+  const now = Date.now(); let ch = false;
+  if (!isObj(S.del)) S.del = {};
+  const cols = {};
+  for (const col of SYNC_COLS) {
+    const old = SNAP.cols[col], m = new Map();
+    for (const x of S[col]) {
+      const o = old.get(x.id), k = itemKey(x);
+      if (o && o.k === k) x.u = o.u; else { x.u = Math.max(now, o ? o.u + 1 : 0); ch = true; }
+      m.set(x.id, { k, u: x.u });
+    }
+    for (const id of old.keys()) if (!m.has(id)) { S.del[id] = Math.max(now, (old.get(id).u || 0) + 1); ch = true; }
+    cols[col] = m;
+  }
+  SNAP = { cols };
+  return ch;
+}
+/* Marks everything as changed now (Import · Replace, so the backup wins on every device). */
+function touchAll(oldIds) {
+  const now = Date.now();
+  for (const col of SYNC_COLS) {
+    const have = new Set(S[col].map(x => x.id));
+    for (const id of (oldIds[col] || [])) if (!have.has(id)) S.del[id] = now;
+    for (const x of S[col]) { x.u = now; delete S.del[x.id]; }
+  }
+  takeSnap();
+}
+const idsOf = st => Object.fromEntries(SYNC_COLS.map(c => [c, st[c].map(x => x.id)]));
+
+/* ---------- cloud payload ---------- */
+function syncData(st) {
+  const c = sanitizeState(st);
+  return { app: APP_ID, v: 1, trips: c.trips, members: c.members, expenses: c.expenses, payments: c.payments, del: c.del };
+}
+const payloadStr = () => JSON.stringify(syncData(S));
+function parseRemote(str) {
+  let o; try { o = JSON.parse(str); } catch (e) { throw { kind: 'bad', msg: 'Không đọc được dữ liệu trên mây.' }; }
+  if (!isObj(o) || o.app !== APP_ID) throw { kind: 'foreign' };
+  return sanitizeState(o);
+}
+
+/* ---------- merge (same answer whichever device runs it) ---------- */
+function newer(a, b) {
+  if (!a) return b; if (!b) return a;
+  if ((a.u || 0) !== (b.u || 0)) return (a.u || 0) > (b.u || 0) ? a : b;
+  return canon(a) >= canon(b) ? a : b;
+}
+/* L = this device, R = the other copy (cloud or backup). R's order comes first so every device ends with the same order. */
+function mergeStates(L, R) {
+  const del = { ...R.del };
+  for (const [k, t] of Object.entries(L.del || {})) if (!(k in del) || t > del[k]) del[k] = t;
+  const out = {};
+  for (const col of SYNC_COLS) {
+    const Lm = new Map(L[col].map(x => [x.id, x])), used = new Set(), arr = [];
+    for (const r of R[col]) { used.add(r.id); arr.push(newer(Lm.get(r.id), r)); }
+    for (const l of L[col]) if (!used.has(l.id)) arr.push(l);
+    out[col] = arr.filter(x => !(x.id in del) || (x.u || 0) > del[x.id]).map(x => x.split ? { ...x, split: [...x.split] } : { ...x });
+  }
+  out.del = sDel(del);
+  purgeOrphans(out);
+  return out;
+}
+function mergeIn(R) {
+  const m = mergeStates(S, R);
+  for (const col of SYNC_COLS) S[col] = m[col];
+  S.del = m.del;
+  fixCurrentTrip();
+  takeSnap();
+}
+function replaceWithRemote(R) {
+  for (const col of SYNC_COLS) S[col] = R[col].map(x => ({ ...x }));
+  S.del = { ...R.del };
+  fixCurrentTrip();
+  takeSnap();
+}
+const hasOwnData = () => S.trips.length > 0;
+
+/* ---------- sync settings on this device ---------- */
+const SC = { on: false, pin: '', server: '', slot: 'caguman', rev: 0, hash: '', last: 0 };
+function loadSC() {
+  try {
+    const o = JSON.parse(lsGet(LS_SYNC) || 'null'); if (!isObj(o)) return;
+    SC.on = sBool(o.on); SC.pin = /^\d{4,8}$/.test(o.pin) ? o.pin : '';
+    SC.server = /^https?:\/\/[^\s"'<>]+$/.test(o.server || '') ? sStr(o.server, 200) : '';
+    SC.slot = /^[a-z0-9-]{1,40}$/.test(o.slot) ? o.slot : 'caguman';
+    SC.rev = Math.round(sNum(o.rev, 0, 1e12, 0)); SC.hash = sStr(o.hash, 60); SC.last = sTs(o.last);
+    if (!SC.pin) SC.on = false;
+  } catch (e) { /* ignore */ }
+}
+function saveSC() { lsSet(LS_SYNC, JSON.stringify(SC)); }
+const pageServer = () => /^https?:$/.test(location.protocol) ? location.origin : '';
+const apiBase = () => (SC.server || pageServer()).replace(/\/+$/, '');
+
+/* ---------- sync engine ---------- */
+const SY = { st: 'off', msg: '', busy: false, again: false, timer: 0, until: 0, gen: 1, clean: 0 };
+function markDirty() { SY.gen++; }
+
+async function api(method, path, body, pin, server) {
+  const base = (server || apiBase()).replace(/\/+$/, '');
+  if (!base) throw { kind: 'noserver' };
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const tm = setTimeout(() => { if (ctl) ctl.abort(); }, 20000);
+  const headers = { 'X-Pin': pin == null ? SC.pin : pin };
+  if (body) headers['Content-Type'] = 'application/json';
+  let r;
+  try { r = await fetch(base + '/api' + path, { method, headers, body: body ? JSON.stringify(body) : undefined, cache: 'no-store', signal: ctl ? ctl.signal : undefined }); }
+  catch (e) { throw { kind: 'net', msg: e && e.message }; }
+  finally { clearTimeout(tm); }
+  let j = null; try { j = await r.json(); } catch (e) { /* not json */ }
+  if (r.status === 401) throw { kind: 'pin', left: j && j.triesLeft };
+  if (r.status === 429) throw { kind: 'locked', wait: (j && j.retryIn) || 900 };
+  if (r.status === 409 && j) return { conflict: true, ...j };
+  if (!r.ok || !j) throw { kind: j && j.error === 'setup' ? 'setup' : 'server', msg: (j && (j.detail || j.error)) || ('HTTP ' + r.status) };
+  return j;
+}
+function syncErrText(e) {
+  if (!e || typeof e !== 'object') return 'Đồng bộ không thành công.';
+  return {
+    net: 'Không kết nối được trang đồng bộ. Thay đổi vẫn được giữ trên máy này.',
+    pin: 'Mã PIN không đúng.' + (e.left > 0 ? ` Còn ${e.left} lần thử trước khi tạm khoá 15 phút.` : ''),
+    locked: `Nhập sai PIN quá nhiều lần. Đồng bộ tạm dừng ${Math.ceil((e.wait || 900) / 60)} phút.`,
+    setup: 'Trang đồng bộ chưa cài đặt xong: ' + (e.msg || ''),
+    noserver: 'Hãy nhập địa chỉ trang đồng bộ trước.',
+    foreign: 'Chỗ lưu trên mây này đang chứa dữ liệu của công cụ khác.',
+    bad: e.msg || 'Không đọc được dữ liệu trên mây.',
+    server: 'Trang đồng bộ gặp lỗi (' + (e.msg || 'không rõ') + '). Sẽ tự thử lại.'
+  }[e.kind] || 'Đồng bộ không thành công.';
+}
+function setSync(st, msg = '') {
+  SY.st = st; SY.msg = msg;
+  const d = document.getElementById('sdot');
+  if (d) { d.className = 'sdot s-' + st + (SC.on ? '' : ' hidden'); d.title = syncLine(); }
+  const b = document.getElementById('syncBox'); if (b && !b.contains(document.activeElement)) b.innerHTML = syncInner();
+}
+function ago(t) {
+  if (!t) return 'chưa lần nào';
+  const s = Math.max(0, (Date.now() - t) / 1000);
+  if (s < 50) return 'vừa xong'; if (s < 3600) return Math.round(s / 60) + ' phút trước';
+  if (s < 86400) return Math.round(s / 3600) + ' giờ trước';
+  return fmtDay(keyOf(new Date(t)), true);
+}
+function syncLine() {
+  if (!SC.on) return 'Đồng bộ đang tắt';
+  if (SY.st === 'busy') return 'Đang đồng bộ…';
+  if (SY.st === 'ok') return 'Đã đồng bộ · ' + ago(SC.last);
+  if (SY.st === 'offline') return 'Ngoại tuyến · thay đổi đang chờ trên máy này';
+  return SY.msg || 'Chưa đồng bộ';
+}
+function schedSync(ms = 1500) { clearTimeout(SY.timer); SY.timer = setTimeout(() => syncNow(false), ms); }
+
+function applyRemote(g) {
+  if (g.data == null) { SC.rev = 0; SC.hash = ''; saveSC(); markDirty(); return; }
+  const R = parseRemote(g.data);
+  if (stampChanges()) markDirty();          // keep edits made a moment ago
+  mergeIn(R);
+  SC.rev = g.rev; SC.hash = hashStr(g.data); saveSC();
+  markDirty();
+  persist();
+  afterRemote();
+}
+let renderWaiting = false;
+function afterRemote() {
+  if (isTyping()) { renderWaiting = true; return; }
+  render();
+}
+async function syncNow(manual) {
+  if (!SC.on) return setSync('off');
+  if (SY.busy) { SY.again = true; return; }
+  if (!manual && SY.st === 'pin') return;
+  if (!manual && SY.st === 'locked' && Date.now() < SY.until) return;
+  if (navigator.onLine === false) return setSync('offline');
+  SY.busy = true; setSync('busy');
+  try {
+    const g = await api('GET', '/slot/' + SC.slot + '?since=' + SC.rev);
+    if (!g.same) applyRemote(g);
+    for (let i = 0; i < 5 && SY.gen !== SY.clean; i++) {
+      const gen = SY.gen, str = payloadStr(), h = hashStr(str);
+      if (h === SC.hash) { SY.clean = gen; break; }
+      const r = await api('PUT', '/slot/' + SC.slot, { base: SC.rev, data: str });
+      if (r.conflict) { applyRemote(r); continue; }
+      SC.rev = r.rev; SC.hash = h; SY.clean = gen; saveSC();
+    }
+    SC.last = Date.now(); saveSC();
+    setSync('ok');
+  } catch (e) {
+    if (e && e.kind === 'locked') SY.until = Date.now() + (e.wait || 900) * 1000;
+    if (e && e.kind !== 'net') logDiag('sync: ' + (e.kind || '') + ' ' + (e.msg || e.message || ''));
+    setSync(e && e.kind === 'net' ? 'offline' : (e && e.kind) || 'error', syncErrText(e));
+  } finally {
+    SY.busy = false;
+    if (SY.again) { SY.again = false; schedSync(300); }
+  }
+}
+/* When the page is hidden, one last quick save (small data only). */
+function flushOnHide() {
+  if (!SC.on || SY.busy || SY.gen === SY.clean || SY.st === 'pin' || SY.st === 'locked') return;
+  try {
+    const str = payloadStr(); if (hashStr(str) === SC.hash) return;
+    const body = JSON.stringify({ base: SC.rev, data: str });
+    if (body.length > 60000 || !apiBase()) return;
+    fetch(apiBase() + '/api/slot/' + SC.slot, { method: 'PUT', keepalive: true, headers: { 'X-Pin': SC.pin, 'Content-Type': 'application/json' }, body }).catch(() => {});
+  } catch (e) { /* ignore */ }
+}
+
+/* ---------- connect / disconnect ---------- */
+let pendingCloud = null;
+async function connectSync(pin, server) {
+  await api('GET', '/ping', null, pin, server);
+  const g = await api('GET', '/slot/' + SC.slot, null, pin, server);
+  const R = g.data == null ? null : parseRemote(g.data);
+  SC.pin = pin; SC.server = server; SC.on = true; SC.rev = 0; SC.hash = ''; SY.clean = 0; markDirty();
+  if (!R) { saveSC(); return 'empty'; }
+  if (!hasOwnData()) {
+    replaceWithRemote(R); SC.rev = g.rev; SC.hash = hashStr(g.data); SY.clean = SY.gen; saveSC(); persist(); return 'took';
+  }
+  pendingCloud = { R, g }; SC.on = false;   // stays off until the person chooses
+  return 'ask';
+}
+function finishConnect(choice) {
+  const p = pendingCloud; pendingCloud = null; if (!p) return;
+  if (choice === 'cloud') replaceWithRemote(p.R); else mergeIn(p.R);
+  SC.on = true; SC.rev = p.g.rev; SC.hash = hashStr(p.g.data); markDirty(); saveSC();
+  persist();
+}
+function disconnectSync() {
+  Object.assign(SC, { on: false, pin: '', rev: 0, hash: '', last: 0 }); saveSC();
+  clearTimeout(SY.timer); setSync('off');
+}
+
+/* ---------- settings panel ---------- */
+function syncInner() {
+  const host = pageServer() ? location.host : '';
+  if (!SC.on) {
+    const srv = SC.server || (host ? '' : DEFAULT_SERVER);
+    return `<div class="lbl">Đồng bộ giữa các máy</div>
+      <p class="sm">Dùng chung một mã PIN trên điện thoại của Cá, Gừ, Mẫn để cùng xem và ghi một cuốn sổ.</p>
+      <div class="fld"><label for="spin">Mã PIN đồng bộ</label><input class="in" id="spin" name="spin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" placeholder="4 chữ số"></div>
+      ${host ? `<div class="hint">Trang đồng bộ: ${esc(host)} · <button type="button" class="link" data-act="syncSrvShow">dùng địa chỉ khác</button></div>` : ''}
+      <div class="fld${host && !SC.server ? ' hidden' : ''}" id="srvFld"><label for="ssrv">Địa chỉ trang đồng bộ</label><input class="in" id="ssrv" name="ssrv" inputmode="url" autocomplete="off" value="${esc(srv)}" placeholder="https://caguman.….workers.dev"></div>
+      <div class="err" id="syncErr"></div>
+      <div class="btns"><button class="btn" data-act="syncConnect">Kết nối</button></div>`;
+  }
+  const bad = SY.st === 'pin';
+  return `<div class="lbl">Đồng bộ giữa các máy</div>
+    <div class="row mt8"><span class="sdot s-${SY.st} inl"></span><div class="sp">${esc(syncLine())}</div></div>
+    ${SY.st !== 'ok' && SY.st !== 'busy' && SY.msg ? `<p class="sm">${esc(SY.msg)}</p>` : ''}
+    <p class="sm">Trang: ${esc((apiBase() || '').replace(/^https?:\/\//, ''))} · lần cuối ${esc(ago(SC.last))}</p>
+    ${bad ? `<div class="srow"><input class="in" name="spin2" id="spin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" placeholder="PIN"><button class="btn" data-act="syncPin">Thử PIN</button></div>` : ''}
+    <div class="btns"><button class="btn" data-act="syncNowBtn">Đồng bộ ngay</button><button class="btn g" data-act="syncOff">Ngắt kết nối</button></div>`;
+}
+
+'use strict';
+/* ===== app.js — state, views, sheets, actions, stability ===== */
+let S = emptyState(), DEV = sDev(null), TAB = 'ledger', THEME = 'forest', SCENE_KEY = '', CRASHED = false;
+const $ = (s, r = document) => r.querySelector(s);
+const TABS = ['ledger', 'balance', 'trips', 'settings'];
+
+/* ---------- persistence ---------- */
+function persist() { lsSet(LS_KEY, JSON.stringify(S)); }
+function saveDev() { lsSet(LS_DEV, JSON.stringify(DEV)); }
+function save() {
+  const ch = stampChanges();
+  if (ch) { DEV.bkN++; saveDev(); markDirty(); if (SC.on) schedSync(); }
+  persist();
+  return ch;
+}
+function commit(fn) { fn(); save(); render(); }
+function loadAll() {
+  loadDiag();
+  const raw = lsGet(LS_KEY);
+  let o = null;
+  if (raw) { try { o = JSON.parse(raw); } catch (e) { logDiag('load: data could not be read; kept a copy'); lsSet(LS_KEY + '.bad', raw); } }
+  S = sanitizeState(o);
+  try { DEV = sDev(JSON.parse(lsGet(LS_DEV) || 'null')); } catch (e) { DEV = sDev(null); }
+  takeSnap();
+  loadSC();
+  fixCurrentTrip();
+}
+function fixCurrentTrip() {
+  if (!S.trips.some(t => t.id === DEV.trip)) {
+    const t = [...S.trips].sort((a, b) => (b.at || 0) - (a.at || 0))[0];
+    DEV.trip = t ? t.id : ''; saveDev();
+  }
+}
+
+/* ---------- lookups and maths ---------- */
+const curTrip = () => S.trips.find(t => t.id === DEV.trip) || null;
+const memberOf = id => S.members.find(m => m.id === id);
+const nameOf = id => { const m = memberOf(id); return m ? m.name : 'Người đã xoá'; };
+const colorOf = id => { const m = memberOf(id); return m ? PALETTE[m.c] : '#9AA0A6'; };
+const avatar = (id, sm) => `<span class="av${sm ? ' sm' : ''}" style="background:${colorOf(id)}" aria-hidden="true">${esc(initial(nameOf(id)))}</span>`;
+
+function tripData(tid) {
+  const mem = S.members.filter(m => m.trip === tid);
+  const ex = S.expenses.filter(e => e.trip === tid);
+  const pay = S.payments.filter(p => p.trip === tid);
+  const order = mem.map(m => m.id);
+  ex.forEach(e => [e.payer, ...e.split].forEach(i => { if (!order.includes(i)) order.push(i); }));
+  pay.forEach(p => [p.from, p.to].forEach(i => { if (!order.includes(i)) order.push(i); }));
+  const paid = {}, share = {}, sent = {}, got = {}, bal = {};
+  order.forEach(i => { paid[i] = share[i] = sent[i] = got[i] = 0; });
+  let total = 0;
+  for (const e of ex) { total += e.amount; paid[e.payer] += e.amount; const s = e.amount / e.split.length; e.split.forEach(i => { share[i] += s; }); }
+  for (const p of pay) { sent[p.from] += p.amount; got[p.to] += p.amount; }
+  order.forEach(i => { bal[i] = paid[i] - share[i] + sent[i] - got[i]; });
+  return { mem, ex, pay, order, paid, share, sent, got, bal, total, transfers: computeTransfers(bal, order) };
+}
+function computeTransfers(bal, order) {
+  const cr = [], db = [];
+  order.forEach((id, i) => { const b = Math.round(bal[id] || 0); if (b > 1) cr.push({ id, a: b, i }); else if (b < -1) db.push({ id, a: -b, i }); });
+  const by = (x, y) => y.a - x.a || x.i - y.i;
+  cr.sort(by); db.sort(by);
+  const out = []; let i = 0, j = 0;
+  while (i < db.length && j < cr.length) {
+    const p = Math.min(db[i].a, cr[j].a);
+    if (p > 1) out.push({ from: db[i].id, to: cr[j].id, amt: p });
+    db[i].a -= p; cr[j].a -= p;
+    if (db[i].a <= 1) i++;
+    if (cr[j].a <= 1) j++;
+  }
+  return out;
+}
+
+/* ---------- theme and header ---------- */
+function pickTheme() {
+  THEME = DEV.theme !== 'random' ? DEV.theme : Object.keys(THEMES)[Math.floor(Math.random() * 4)];
+  applyTheme();
+}
+function applyTheme() {
+  const T = THEMES[THEME], r = document.documentElement.style;
+  r.setProperty('--ac', T.ac); r.setProperty('--ac2', T.ac2);
+  r.setProperty('--acSoft', mix(T.ac, '#ffffff', .86));
+  const m = document.querySelector('meta[name=theme-color]'); if (m) m.setAttribute('content', T.ac);
+  SCENE_KEY = ''; updateScene();
+}
+function updateScene() {
+  const ph = phaseOf(new Date().getHours()), key = THEME + ph;
+  if (key === SCENE_KEY) return;
+  SCENE_KEY = key;
+  const img = $('#hdImg'); if (img) img.src = sceneSrc(THEME, ph);
+  const hd = $('#hd'); if (hd) hd.classList.toggle('dk', ph === 'dusk' || ph === 'night');
+}
+function renderHeader() {
+  const t = curTrip();
+  $('#hdTitle').textContent = t ? t.name : 'Sổ chi tiêu chuyến đi';
+  if (t) {
+    const d = tripData(t.id);
+    $('#hdSub').textContent = (d.mem.length ? d.mem.map(m => m.name).join(' · ') : 'Chưa có thành viên') + ' · ' + d.ex.length + ' khoản chi';
+  } else $('#hdSub').textContent = 'Ghi chung · chia đều · biết ai trả ai';
+  const d = $('#sdot'); if (d) { d.className = 'sdot s-' + SY.st + (SC.on ? '' : ' hidden'); d.title = syncLine(); }
+}
+
+/* ---------- views ---------- */
+const rc = (h, cls = '') => `<div class="rc ${cls}">${h}</div>`;
+function render() {
+  try {
+    renderWaiting = false;
+    updateScene();
+    renderHeader();
+    const t = curTrip(), d = t ? tripData(t.id) : null;
+    const v = { ledger: viewLedger, balance: viewBalance, trips: viewTrips, settings: viewSettings }[TAB];
+    $('#main').innerHTML = (STORAGE_OK ? '' : storageNote()) + v(t, d);
+    document.querySelectorAll('#tabs [data-tab]').forEach(b => { const on = b.dataset.tab === TAB; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'page' : 'false'); });
+  } catch (e) {
+    logDiag('render: ' + (e && e.stack || e));
+    $('#main').innerHTML = rc(`<div class="rh"><div class="eyebrow">— Có lỗi —</div><p class="sm c">Có lỗi khi hiển thị… dữ liệu của bạn vẫn an toàn.</p></div>
+      <div class="btns"><button class="btn" data-act="export">Xuất sao lưu</button><button class="btn g" data-act="copyDiag">Chép báo cáo</button></div>`);
+  }
+}
+const storageNote = () => `<div class="note bad">Trình duyệt đang chặn lưu dữ liệu trên máy. Hãy <button class="link" data-act="export">xuất file sao lưu</button> trước khi đóng.</div>`;
+function welcome() {
+  return rc(`<div class="rh"><div class="eyebrow">— Sổ chi tiêu —</div><div class="h2">Chào mừng!</div>
+    <p class="sm c">Ghi các khoản chi chung, chia đều và biết ngay ai cần trả ai.</p></div>
+    <div class="btns col"><button class="btn" data-act="newTrip">Tạo chuyến đi đầu tiên</button></div>
+    <div class="dash"></div>
+    <p class="sm">Đã dùng trên máy khác?</p>
+    <div class="btns"><button class="btn g" data-act="goSync">Kết nối đồng bộ</button><button class="btn g" data-act="import">Nhập file</button></div>`);
+}
+function noMembers(t) {
+  return rc(`<div class="rh"><div class="eyebrow">— ${esc(t.name)} —</div><p class="sm c">Chuyến này chưa có ai. Thêm thành viên để bắt đầu ghi.</p></div>
+    <div class="btns col"><button class="btn" data-act="tab" data-tab="trips">Thêm thành viên</button></div>`);
+}
+function splitText(e, memIds) {
+  const all = memIds.length > 1 && e.split.length === memIds.length && memIds.every(i => e.split.includes(i));
+  return all ? 'chia cả nhóm' : 'chia ' + e.split.map(nameOf).join(', ');
+}
+function expRow(e, memIds) {
+  return `<button class="it" data-act="editExp" data-id="${e.id}">${avatar(e.payer)}<span class="t"><span class="d">${esc(e.desc)}</span><span class="m">${esc(nameOf(e.payer))} trả · ${esc(splitText(e, memIds))}</span></span><span class="a">${fmt(e.amount)} ₫</span></button>`;
+}
+function transfersHTML(d) {
+  if (!d.ex.length && !d.pay.length) return `<div class="settled">Chưa có gì để chia</div>`;
+  if (!d.transfers.length) return `<div class="settled">Mọi người đã cân bằng ✓</div>`;
+  return d.transfers.map((t, i) => `<button class="tr" data-act="payTransfer" data-i="${i}">${avatar(t.from, 1)}<span class="nm">${esc(nameOf(t.from))}</span><span class="arr">→</span>${avatar(t.to, 1)}<span class="nm">${esc(nameOf(t.to))}</span><span class="x">${fmt(t.amt)} ₫</span></button>`).join('') +
+    `<div class="hint c">Bấm vào một dòng khi đã trả xong</div>`;
+}
+function backupNag() {
+  if (DEV.bkN < 10 || (SC.on && SY.st === 'ok')) return '';
+  return `<div class="note">${DEV.bkN} thay đổi chưa sao lưu · <button class="link" data-act="export">Xuất file</button></div>`;
+}
+function viewLedger(t, d) {
+  if (!t) return welcome();
+  if (!d.mem.length && !d.ex.length) return noMembers(t);
+  const memIds = d.mem.map(m => m.id);
+  let h = `<div class="rh"><div class="eyebrow">— Sổ chi tiêu —</div><div class="big">${fmt(d.total)} <i>₫</i></div><div class="sm c">${d.ex.length} khoản · ${d.mem.length} người</div></div><div class="dash"></div>`;
+  if (!d.ex.length) h += `<div class="empty">Chưa có khoản chi nào — bấm <b>+</b> để thêm</div>`;
+  else {
+    const days = new Map();
+    [...d.ex].sort((a, b) => dayOfItem(b).localeCompare(dayOfItem(a)) || (b.at || 0) - (a.at || 0)).forEach(e => {
+      const k = dayOfItem(e); if (!days.has(k)) days.set(k, []); days.get(k).push(e);
+    });
+    for (const [k, list] of days) {
+      h += `<div class="day"><span>${esc(fmtDay(k))}</span><span>${fmt(list.reduce((s, e) => s + e.amount, 0))} ₫</span></div>` + list.map(e => expRow(e, memIds)).join('');
+    }
+  }
+  h += `<div class="dash"></div><div class="lbl">Ai trả ai</div>` + transfersHTML(d);
+  if (d.ex.length && !d.transfers.length) h += `<div class="foot">✓ tổng đã cân bằng</div>`;
+  return rc(h) + backupNag();
+}
+function viewBalance(t, d) {
+  if (!t) return welcome();
+  if (!d.mem.length && !d.ex.length) return noMembers(t);
+  let h = `<div class="rh"><div class="eyebrow">— Cân bằng —</div><div class="sm c">Tổng ${fmt(d.total)} ₫ · ${d.ex.length} khoản</div></div><div class="dash"></div>`;
+  h += d.order.map(id => {
+    const b = Math.round(d.bal[id]), cls = b > 1 ? 'pos' : b < -1 ? 'neg' : '';
+    const extra = (d.sent[id] ? ` · đã chuyển ${fmt(d.sent[id])}` : '') + (d.got[id] ? ` · đã nhận ${fmt(d.got[id])}` : '');
+    return `<div class="pb">${avatar(id)}<span class="t"><span class="d">${esc(nameOf(id))}</span><span class="m">Đã trả ${fmt(d.paid[id])} · phần chia ${fmt(d.share[id])}${extra}</span></span><span class="v ${cls}">${Math.abs(b) <= 1 ? '0' : fmtSigned(b)} ₫</span></div>`;
+  }).join('');
+  h += `<div class="hint">Số dương: được nhận lại · số âm: cần trả thêm</div>`;
+  h += `<div class="dash"></div><div class="lbl">Ai trả ai</div>` + transfersHTML(d);
+  h += `<div class="btns"><button class="btn" data-act="addPay">Ghi thanh toán</button><button class="btn g" data-act="shareSummary">Gửi tóm tắt</button></div>`;
+  if (d.pay.length) {
+    h += `<div class="dash"></div><div class="lbl">Đã thanh toán</div>` + [...d.pay].sort((a, b) => dayOfItem(b).localeCompare(dayOfItem(a)) || (b.at || 0) - (a.at || 0)).map(p =>
+      `<button class="it" data-act="editPay" data-id="${p.id}">${avatar(p.from, 1)}<span class="t"><span class="d">${esc(nameOf(p.from))} → ${esc(nameOf(p.to))}</span><span class="m">${esc(fmtDay(dayOfItem(p)))}</span></span><span class="a pos">${fmt(p.amount)} ₫</span></button>`).join('');
+  }
+  return rc(h);
+}
+function viewTrips(t) {
+  const trips = [...S.trips].sort((a, b) => (b.at || 0) - (a.at || 0));
+  let h = `<div class="rh"><div class="eyebrow">— Các chuyến đi —</div></div>`;
+  if (!trips.length) h += `<div class="empty">Chưa có chuyến nào</div>`;
+  h += trips.map(x => {
+    const d = tripData(x.id), on = t && x.id === t.id;
+    return `<button class="trip${on ? ' on' : ''}" data-act="pickTrip" data-id="${x.id}"><span class="t"><span class="d">${esc(x.name)}</span><span class="m">${d.mem.length} người · ${d.ex.length} khoản · ${fmt(d.total)} ₫</span></span>${on ? '<span class="badge">Đang xem</span>' : ''}</button>`;
+  }).join('');
+  h += `<div class="btns col"><button class="btn g" data-act="newTrip">＋ Chuyến đi mới</button></div>`;
+  let out = rc(h);
+  if (t) {
+    const d = tripData(t.id);
+    let m = `<div class="lbl">Thành viên · ${esc(t.name)}</div>`;
+    m += d.mem.length ? d.mem.map(x => `<button class="it" data-act="member" data-id="${x.id}">${avatar(x.id)}<span class="t"><span class="d">${esc(x.name)}</span><span class="m">Đã trả ${fmt(d.paid[x.id])} ₫</span></span><span class="go">Sửa</span></button>`).join('') : `<div class="empty">Chưa có ai</div>`;
+    m += `<div class="srow"><input class="in" id="newMem" maxlength="40" placeholder="Tên người mới…" autocomplete="off" enterkeyhint="done"><button class="btn" data-act="addMember">Thêm</button></div>`;
+    m += `<div class="dash"></div><div class="btns"><button class="btn g" data-act="renameTrip">Đổi tên chuyến</button><button class="btn d" data-act="delTrip">Xoá chuyến</button></div>`;
+    out += rc(m);
+  }
+  return out;
+}
+function viewSettings() {
+  const T = THEMES[THEME];
+  let h = `<div id="syncBox">${syncInner()}</div><div class="dash"></div>`;
+  h += `<div class="lbl">Sao lưu</div><p class="sm">${DEV.bkN ? `${DEV.bkN} thay đổi chưa sao lưu` : 'Không có thay đổi mới'} · lần cuối ${esc(DEV.bkAt ? ago(DEV.bkAt) : 'chưa lần nào')}</p>
+    <div class="btns"><button class="btn" data-act="export">Xuất file</button><button class="btn g" data-act="shareBk">Gửi file</button><button class="btn g" data-act="import">Nhập file</button></div>
+    <div class="btns"><button class="btn g" data-act="csv">Xuất CSV chuyến đang xem</button></div>
+    <p class="hint">Nhập được cả file từ sổ cũ “Sổ chi tiêu chuyến đi”. Có thể chọn nhiều file cùng lúc.</p><div class="dash"></div>`;
+  h += `<div class="lbl">Giao diện</div><p class="sm">Hôm nay: ${esc(T.name)} (${esc(THEME)})</p><div class="seg">` +
+    [['random', 'Ngẫu nhiên'], ['earth', 'Đất'], ['forest', 'Rừng'], ['sea', 'Biển'], ['wind', 'Gió']].map(([v, n]) => `<button class="${DEV.theme === v ? 'on' : ''}" data-act="theme" data-v="${v}" aria-pressed="${DEV.theme === v}">${n}</button>`).join('') + `</div>
+    <button class="tog${DEV.lite ? ' on' : ''}" data-act="lite" aria-pressed="${DEV.lite}"><span class="t"><span class="d">Chế độ nhẹ</span><span class="m">Tắt hiệu ứng chuyển động. Tự bật nếu lần trước ứng dụng bị đóng bất ngờ.</span></span><span class="sw"></span></button><div class="dash"></div>`;
+  h += `<div class="lbl">Chẩn đoán</div><p class="sm">Phiên bản ${esc(VERSION)} · lưu trữ ${STORAGE_OK ? 'bình thường' : 'bị chặn'} · ${DIAG.length} dòng nhật ký</p>
+    ${DIAG.length ? `<div class="log">${DIAG.slice(-6).reverse().map(x => `<div>${esc(new Date(x.t).toLocaleString('vi-VN'))} · ${esc(x.m)}</div>`).join('')}</div>` : ''}
+    <div class="btns"><button class="btn g" data-act="copyDiag">Chép báo cáo</button>${DIAG.length ? '<button class="btn g" data-act="clearDiag">Xoá nhật ký</button>' : ''}</div><div class="dash"></div>`;
+  h += `<div class="lbl">Xoá dữ liệu</div><p class="sm">${SC.on ? 'Đồng bộ đang bật: sẽ xoá trên mọi máy đã kết nối.' : 'Chỉ xoá trên máy này.'}</p><div class="btns"><button class="btn d" data-act="eraseAll">Xoá toàn bộ dữ liệu</button></div>`;
+  return rc(h);
+}
+function setTab(t) {
+  if (!TABS.includes(t)) return;
+  TAB = t; render(); window.scrollTo(0, 0);
+}
+
+/* ---------- toast ---------- */
+let toastT = 0;
+function toast(m, ms = 2200) {
+  const el = $('#toast'); el.textContent = m; el.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), ms);
+}
+
+/* ---------- history: Back closes sheets; Back on the main screen needs two swipes ---------- */
+let HIST_OK = true, lastBack = 0;
+let sheetOpen = false, sheetClosing = false, sheetQueue = null, sheetCtx = null, sheetTok = 0;
+function initHistory() {
+  try { history.replaceState({ cgm: 'base' }, ''); history.pushState({ cgm: 'guard' }, ''); }
+  catch (e) { HIST_OK = false; logDiag('history blocked'); }
+}
+function pushHist(k) { if (!HIST_OK) return; try { history.pushState({ cgm: k }, ''); } catch (e) { HIST_OK = false; } }
+window.addEventListener('popstate', () => {
+  if (sheetClosing) { sheetClosing = false; hideSheet(); flushSheetQueue(); return; }
+  if (sheetOpen) { hideSheet(); return; }
+  const st = history.state && history.state.cgm;
+  if (st === 'guard' || st === 'sheet') return;
+  if (TAB !== 'ledger') { setTab('ledger'); pushHist('guard'); return; }
+  if (Date.now() - lastBack < 2500) { try { history.back(); } catch (e) { /* ignore */ } return; }
+  lastBack = Date.now(); toast('Vuốt lại lần nữa để thoát'); pushHist('guard');
+});
+
+/* ---------- bottom sheets ---------- */
+function openSheet(html, ctx) {
+  if (sheetClosing) { sheetQueue = [html, ctx]; return; }
+  const el = $('#sheet');
+  el.innerHTML = html; sheetCtx = ctx || {};
+  sheetTok++;
+  if (!sheetOpen) {
+    sheetOpen = true; pushHist('sheet');
+    el.classList.remove('hidden'); $('#scrim').classList.remove('hidden');
+    void el.offsetWidth; el.classList.add('open'); $('#scrim').classList.add('open');
+  }
+  el.scrollTop = 0;
+  try { el.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+}
+function closeSheet() {
+  if (!sheetOpen || sheetClosing) return;
+  if (HIST_OK && history.state && history.state.cgm === 'sheet') {
+    sheetClosing = true;
+    try { history.back(); } catch (e) { sheetClosing = false; hideSheet(); return; }
+    const tok = sheetTok;
+    setTimeout(() => { if (sheetClosing && tok === sheetTok) { sheetClosing = false; hideSheet(); flushSheetQueue(); } }, 700);
+  } else hideSheet();
+}
+function hideSheet() {
+  if (!sheetOpen) return;
+  sheetOpen = false; sheetCtx = null;
+  const el = $('#sheet'), tok = ++sheetTok;
+  el.classList.remove('open'); $('#scrim').classList.remove('open');
+  if (document.activeElement && el.contains(document.activeElement)) document.activeElement.blur();
+  const done = () => { if (tok === sheetTok && !sheetOpen) { el.classList.add('hidden'); $('#scrim').classList.add('hidden'); el.innerHTML = ''; } };
+  if (DEV.lite) done(); else setTimeout(done, 220);
+  if (renderWaiting) render();
+}
+function flushSheetQueue() { const q = sheetQueue; sheetQueue = null; if (q) openSheet(q[0], q[1]); }
+const sheetHead = title => `<div class="sh-h"><div class="sh-t">${esc(title)}</div><button class="shx" data-act="closeSheet" aria-label="Đóng">✕</button></div>`;
+function isTyping() {
+  const a = document.activeElement;
+  return !!a && (a.tagName === 'TEXTAREA' || (a.tagName === 'INPUT' && !['button', 'checkbox', 'radio', 'file'].includes(a.type)));
+}
+function armed(b) {
+  const now = Date.now();
+  if (b.dataset.armed && now - Number(b.dataset.armed) < 3000) return true;
+  b.dataset.armed = now; if (!b.dataset.label) b.dataset.label = b.textContent;
+  b.textContent = 'Bấm lần nữa để xoá';
+  setTimeout(() => { if (b.isConnected && b.dataset.armed && Date.now() - Number(b.dataset.armed) >= 2900) { delete b.dataset.armed; b.textContent = b.dataset.label; } }, 3000);
+  return false;
+}
+const chip = (id, on, act) => `<button class="chip${on ? ' on' : ''}" data-act="${act}" data-id="${id}" aria-pressed="${on}">${avatar(id, 1)}<span>${esc(nameOf(id))}</span></button>`;
+
+/* ---------- expense sheet ---------- */
+function expIds(c) {
+  const ids = S.members.filter(m => m.trip === c.trip).map(m => m.id);
+  for (const i of [c.payer, ...c.split]) if (i && !ids.includes(i)) ids.push(i);
+  return ids;
+}
+function expenseSheet(id) {
+  const t = curTrip(); if (!t) return tripSheet();
+  const memIds = S.members.filter(m => m.trip === t.id).map(m => m.id);
+  const e = id ? S.expenses.find(x => x.id === id) : null;
+  if (id && !e) return toast('Khoản này không còn nữa');
+  if (!e && !memIds.length) { setTab('trips'); return toast('Thêm thành viên trước'); }
+  const lp = DEV.payer[t.id];
+  const ctx = { kind: 'exp', id: e ? e.id : '', trip: e ? e.trip : t.id, payer: e ? e.payer : (memIds.includes(lp) ? lp : memIds[0]), split: new Set(e ? e.split : memIds) };
+  openSheet(`${sheetHead(e ? 'Sửa khoản chi' : 'Thêm khoản chi')}
+    <div class="fld"><label for="fDesc">Nội dung</label><input class="in" id="fDesc" maxlength="120" placeholder="VD: Taxi, lẩu gà…" value="${e ? esc(e.desc) : ''}" autocomplete="off"></div>
+    <div class="fld"><label for="fAmt">Số tiền (₫)</label><div class="srow"><input class="in amt" id="fAmt" inputmode="numeric" autocomplete="off" placeholder="0" value="${e ? fmt(e.amount) : ''}"><button class="btn g" data-act="add000" data-for="fAmt">000</button></div></div>
+    <div class="fld"><div class="flab">Người trả</div><div class="chips" id="cPayer"></div></div>
+    <div class="fld"><div class="flab">Chia cho <button class="link" data-act="splitAll">chọn tất cả</button></div><div class="chips" id="cSplit"></div><div class="hint" id="perHead"></div></div>
+    <div class="fld"><label for="fDate">Ngày</label><input class="in" id="fDate" type="date" value="${e && e.date ? e.date : todayKey()}"></div>
+    <div class="err" id="fErr" role="alert"></div>
+    <div class="btns"><button class="btn" data-act="saveExp">${e ? 'Lưu thay đổi' : 'Ghi vào sổ'}</button>${e ? '<button class="btn d" data-act="delExp">Xoá</button>' : ''}</div>`, ctx);
+  drawExpChips();
+}
+function drawExpChips() {
+  const c = sheetCtx; if (!c || c.kind !== 'exp') return;
+  const ids = expIds(c);
+  $('#cPayer').innerHTML = ids.map(id => chip(id, c.payer === id, 'pickPayer')).join('');
+  $('#cSplit').innerHTML = ids.map(id => chip(id, c.split.has(id), 'toggleSplit')).join('');
+  updatePerHead();
+}
+function updatePerHead() {
+  const c = sheetCtx, el = $('#perHead'); if (!c || !el) return;
+  const a = Number(digits($('#fAmt').value)) || 0, n = c.split.size;
+  el.textContent = !n ? 'Chưa chọn ai' : a ? `Mỗi người ${fmt(a / n)} ₫ · ${n} người` : `${n} người`;
+}
+
+/* ---------- payment sheet ---------- */
+function paymentSheet(id, pre) {
+  const t = curTrip(); if (!t) return;
+  const memIds = S.members.filter(m => m.trip === t.id).map(m => m.id);
+  const p = id ? S.payments.find(x => x.id === id) : null;
+  if (id && !p) return toast('Khoản này không còn nữa');
+  if (memIds.length < 2 && !p) return toast('Cần ít nhất 2 người');
+  const ctx = { kind: 'pay', id: p ? p.id : '', trip: p ? p.trip : t.id, from: p ? p.from : pre ? pre.from : memIds[0], to: p ? p.to : pre ? pre.to : memIds[1] };
+  const amt = p ? p.amount : pre ? pre.amt : 0;
+  openSheet(`${sheetHead(p ? 'Sửa thanh toán' : 'Ghi thanh toán')}
+    <div class="fld"><div class="flab">Người trả</div><div class="chips" id="cFrom"></div></div>
+    <div class="fld"><div class="flab">Người nhận</div><div class="chips" id="cTo"></div></div>
+    <div class="fld"><label for="pAmt">Số tiền (₫)</label><div class="srow"><input class="in amt" id="pAmt" inputmode="numeric" autocomplete="off" placeholder="0" value="${amt ? fmt(amt) : ''}"><button class="btn g" data-act="add000" data-for="pAmt">000</button></div></div>
+    <div class="fld"><label for="pDate">Ngày</label><input class="in" id="pDate" type="date" value="${p && p.date ? p.date : todayKey()}"></div>
+    <div class="err" id="pErr" role="alert"></div>
+    <div class="btns"><button class="btn" data-act="savePay">${p ? 'Lưu thay đổi' : 'Ghi đã trả'}</button>${p ? '<button class="btn d" data-act="delPay">Xoá</button>' : ''}</div>`, ctx);
+  drawPayChips();
+}
+function drawPayChips() {
+  const c = sheetCtx; if (!c || c.kind !== 'pay') return;
+  const ids = S.members.filter(m => m.trip === c.trip).map(m => m.id);
+  for (const i of [c.from, c.to]) if (i && !ids.includes(i)) ids.push(i);
+  $('#cFrom').innerHTML = ids.map(id => chip(id, c.from === id, 'pickFrom')).join('');
+  $('#cTo').innerHTML = ids.map(id => chip(id, c.to === id, 'pickTo')).join('');
+}
+
+/* ---------- trip and member sheets ---------- */
+function parseNames(s) {
+  const out = [];
+  for (const raw of String(s || '').split(/[,;\n]+/)) {
+    const n = sStr(raw, 40);
+    if (n && !out.some(x => x.toLocaleLowerCase('vi') === n.toLocaleLowerCase('vi'))) out.push(n);
+    if (out.length >= 30) break;
+  }
+  return out;
+}
+function tripSheet() {
+  const t = curTrip(), d = new Date();
+  const prev = t ? S.members.filter(m => m.trip === t.id) : [];
+  openSheet(`${sheetHead('Chuyến đi mới')}
+    <div class="fld"><label for="tName">Tên chuyến</label><input class="in" id="tName" maxlength="60" autocomplete="off" value="Chuyến đi ${pad(d.getDate())}/${pad(d.getMonth() + 1)}"></div>
+    ${prev.length ? `<button class="tog on" data-act="toggleReuse" id="reuse" aria-pressed="true"><span class="t"><span class="d">Dùng lại thành viên</span><span class="m">${esc(prev.map(m => m.name).join(', '))}</span></span><span class="sw"></span></button>` : ''}
+    <div class="fld"><label for="tMem">${prev.length ? 'Thêm người khác' : 'Thành viên'}</label><input class="in" id="tMem" maxlength="400" autocomplete="off" placeholder="Tên, cách nhau bằng dấu phẩy"></div>
+    <div class="err" id="tErr" role="alert"></div>
+    <div class="btns"><button class="btn" data-act="saveTrip">Tạo chuyến</button></div>`, { kind: 'trip', reuse: prev.length > 0, from: t ? t.id : '' });
+}
+function tripSwitchSheet() {
+  const trips = [...S.trips].sort((a, b) => (b.at || 0) - (a.at || 0));
+  openSheet(`${sheetHead('Chọn chuyến đi')}` + trips.map(x => `<button class="trip${x.id === DEV.trip ? ' on' : ''}" data-act="pickTrip" data-id="${x.id}"><span class="t"><span class="d">${esc(x.name)}</span></span>${x.id === DEV.trip ? '<span class="badge">Đang xem</span>' : ''}</button>`).join('') +
+    `<div class="btns col"><button class="btn g" data-act="newTrip">＋ Chuyến đi mới</button></div>`, { kind: 'switch' });
+}
+function memberSheet(id) {
+  const m = memberOf(id); if (!m) return toast('Người này không còn nữa');
+  const used = S.expenses.some(e => e.trip === m.trip && (e.payer === id || e.split.includes(id))) || S.payments.some(p => p.trip === m.trip && (p.from === id || p.to === id));
+  openSheet(`${sheetHead('Thành viên')}
+    <div class="fld"><label for="mName">Tên</label><input class="in" id="mName" maxlength="40" autocomplete="off" value="${esc(m.name)}"></div>
+    <div class="flab">Màu</div><div class="chips" id="cCol">${PALETTE.map((c, i) => `<button class="dot${m.c === i ? ' on' : ''}" data-act="pickCol" data-i="${i}" style="background:${c}" aria-label="Màu ${i + 1}"></button>`).join('')}</div>
+    <div class="err" id="mErr" role="alert"></div>
+    <div class="btns"><button class="btn" data-act="saveMember">Lưu</button>${used ? '' : '<button class="btn d" data-act="delMember">Xoá khỏi chuyến</button>'}</div>
+    ${used ? '<p class="hint">Người này đã có trong khoản chi hoặc thanh toán nên không xoá được. Bạn vẫn có thể đổi tên.</p>' : ''}`, { kind: 'member', id, c: m.c });
+}
+function renameTripSheet() {
+  const t = curTrip(); if (!t) return;
+  openSheet(`${sheetHead('Đổi tên chuyến')}<div class="fld"><label for="rName">Tên chuyến</label><input class="in" id="rName" maxlength="60" autocomplete="off" value="${esc(t.name)}"></div>
+    <div class="err" id="rErr" role="alert"></div><div class="btns"><button class="btn" data-act="saveRename">Lưu</button></div>`, { kind: 'rename', id: t.id });
+}
+function confirmSheet(title, text, label, onYes) {
+  openSheet(`${sheetHead(title)}<p class="sm">${text}</p><div class="btns"><button class="btn d" data-act="confirmYes">${esc(label)}</button><button class="btn g" data-act="closeSheet">Huỷ</button></div>`, { kind: 'confirm', onYes });
+}
+function textSheet(title, text, note) {
+  openSheet(`${sheetHead(title)}${note ? `<p class="sm">${esc(note)}</p>` : ''}<textarea class="in ta" id="tsText" readonly>${esc(text)}</textarea><div class="btns"><button class="btn" data-act="copyTs">Chép</button></div>`, { kind: 'text' });
+}
+function copyText(text, done) {
+  const fallback = () => textSheet('Chép thủ công', text, 'Không chép tự động được. Giữ ngón tay lên ô dưới để chọn và chép.');
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(() => toast(done || 'Đã chép'), fallback); return; }
+  } catch (e) { /* fall through */ }
+  fallback();
+}
+
+/* ---------- summary text ---------- */
+function summaryText() {
+  const t = curTrip(); if (!t) return '';
+  const d = tripData(t.id);
+  const lines = [t.name, `Tổng: ${fmt(d.total)} ₫ · ${d.ex.length} khoản chi`, ''];
+  d.order.forEach(id => lines.push(`${nameOf(id)}: đã trả ${fmt(d.paid[id])} ₫ · phần chia ${fmt(d.share[id])} ₫`));
+  lines.push('', 'Ai trả ai:');
+  if (!d.transfers.length) lines.push('Mọi người đã cân bằng ✓');
+  d.transfers.forEach(x => lines.push(`• ${nameOf(x.from)} → ${nameOf(x.to)}: ${fmt(x.amt)} ₫`));
+  return lines.join('\n');
+}
+
+/* ---------- actions ---------- */
+const ACT = {
+  tab: b => setTab(b.dataset.tab),
+  add: () => { const t = curTrip(); if (!t) return tripSheet(); expenseSheet(); },
+  closeSheet: () => closeSheet(),
+  newTrip: () => tripSheet(),
+  tripSwitch: () => { if (!S.trips.length) return tripSheet(); tripSwitchSheet(); },
+  pickTrip: b => { DEV.trip = b.dataset.id; saveDev(); if (sheetOpen) closeSheet(); TAB = 'ledger'; render(); window.scrollTo(0, 0); },
+  syncDot: () => toast(syncLine(), 3200),
+  goSync: () => { setTab('settings'); const el = $('#syncBox'); if (el) el.scrollIntoView({ block: 'center' }); },
+
+  editExp: b => expenseSheet(b.dataset.id),
+  pickPayer: b => { sheetCtx.payer = b.dataset.id; drawExpChips(); },
+  toggleSplit: b => { const s = sheetCtx.split, id = b.dataset.id; if (s.has(id)) s.delete(id); else s.add(id); drawExpChips(); },
+  splitAll: () => { const c = sheetCtx; const ids = S.members.filter(m => m.trip === c.trip).map(m => m.id); const all = ids.every(i => c.split.has(i)); c.split = new Set(all ? [] : ids); drawExpChips(); },
+  add000: b => { const el = $('#' + b.dataset.for); if (!el) return; const d = digits(el.value) || '1'; el.value = fmt(Number((d + '000').slice(0, 12))); updatePerHead(); },
+  saveExp: () => {
+    const c = sheetCtx, err = m => { $('#fErr').textContent = m; };
+    const desc = sStr($('#fDesc').value, 120), amount = Number(digits($('#fAmt').value)), date = sDate($('#fDate').value) || todayKey();
+    if (!desc) return err('Nhập nội dung khoản chi.');
+    if (!amount) return err('Nhập số tiền lớn hơn 0.');
+    if (!c.split.size) return err('Chọn ít nhất một người để chia.');
+    if (!S.trips.some(t => t.id === c.trip)) { closeSheet(); return toast('Chuyến này đã bị xoá trên máy khác'); }
+    const split = expIds(c).filter(id => c.split.has(id));
+    if (c.id) {
+      const e = S.expenses.find(x => x.id === c.id);
+      if (!e) { closeSheet(); return toast('Khoản này đã bị xoá trên máy khác'); }
+      commit(() => Object.assign(e, { desc, amount, payer: c.payer, split, date }));
+    } else {
+      if (TAB !== 'ledger' && TAB !== 'balance') { TAB = 'ledger'; window.scrollTo(0, 0); }
+      commit(() => S.expenses.push({ id: newId(), trip: c.trip, desc, amount, payer: c.payer, split, date, at: Date.now(), u: 0 }));
+    }
+    DEV.payer[c.trip] = c.payer; saveDev();
+    closeSheet(); toast(c.id ? 'Đã lưu' : 'Đã ghi vào sổ');
+  },
+  delExp: b => { if (!armed(b)) return; const id = sheetCtx.id; commit(() => { S.expenses = S.expenses.filter(x => x.id !== id); }); closeSheet(); toast('Đã xoá khoản chi'); },
+
+  payTransfer: b => { const t = curTrip(); if (!t) return; const tr = tripData(t.id).transfers[Number(b.dataset.i)]; if (tr) paymentSheet(null, tr); },
+  addPay: () => paymentSheet(),
+  editPay: b => paymentSheet(b.dataset.id),
+  pickFrom: b => { sheetCtx.from = b.dataset.id; drawPayChips(); },
+  pickTo: b => { sheetCtx.to = b.dataset.id; drawPayChips(); },
+  savePay: () => {
+    const c = sheetCtx, err = m => { $('#pErr').textContent = m; };
+    const amount = Number(digits($('#pAmt').value)), date = sDate($('#pDate').value) || todayKey();
+    if (!c.from || !c.to) return err('Chọn người trả và người nhận.');
+    if (c.from === c.to) return err('Người trả và người nhận phải khác nhau.');
+    if (!amount) return err('Nhập số tiền lớn hơn 0.');
+    if (!S.trips.some(t => t.id === c.trip)) { closeSheet(); return toast('Chuyến này đã bị xoá trên máy khác'); }
+    if (c.id) {
+      const p = S.payments.find(x => x.id === c.id);
+      if (!p) { closeSheet(); return toast('Khoản này đã bị xoá trên máy khác'); }
+      commit(() => Object.assign(p, { from: c.from, to: c.to, amount, date }));
+    } else commit(() => S.payments.push({ id: newId(), trip: c.trip, from: c.from, to: c.to, amount, date, at: Date.now(), u: 0 }));
+    closeSheet(); toast('Đã ghi thanh toán');
+  },
+  delPay: b => { if (!armed(b)) return; const id = sheetCtx.id; commit(() => { S.payments = S.payments.filter(x => x.id !== id); }); closeSheet(); toast('Đã xoá thanh toán'); },
+  shareSummary: async () => {
+    const text = summaryText(); if (!text) return;
+    try { if (navigator.share) { await navigator.share({ text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    copyText(text, 'Đã chép tóm tắt — dán vào Zalo nhé');
+  },
+
+  toggleReuse: b => { sheetCtx.reuse = !sheetCtx.reuse; b.classList.toggle('on', sheetCtx.reuse); b.setAttribute('aria-pressed', sheetCtx.reuse); },
+  saveTrip: () => {
+    const c = sheetCtx, name = sStr($('#tName').value, 60);
+    if (!name) { $('#tErr').textContent = 'Nhập tên chuyến.'; return; }
+    const prev = c.reuse && c.from ? S.members.filter(m => m.trip === c.from) : [];
+    const names = parseNames($('#tMem').value).filter(n => !prev.some(m => m.name.toLocaleLowerCase('vi') === n.toLocaleLowerCase('vi')));
+    const id = newId(), now = Date.now();
+    commit(() => {
+      S.trips.push({ id, name, at: now, u: 0 });
+      prev.forEach(m => S.members.push({ id: newId(), trip: id, name: m.name, c: m.c, u: 0 }));
+      names.forEach((n, i) => S.members.push({ id: newId(), trip: id, name: n, c: (prev.length + i) % PALETTE.length, u: 0 }));
+      DEV.trip = id; saveDev();
+    });
+    closeSheet();
+    TAB = (prev.length + names.length) ? 'ledger' : 'trips'; render(); window.scrollTo(0, 0);
+    toast((prev.length + names.length) ? 'Đã tạo chuyến · bấm + để ghi khoản chi' : 'Đã tạo chuyến · thêm thành viên ở đây');
+  },
+  renameTrip: () => renameTripSheet(),
+  saveRename: () => {
+    const name = sStr($('#rName').value, 60), t = S.trips.find(x => x.id === sheetCtx.id);
+    if (!name) { $('#rErr').textContent = 'Nhập tên chuyến.'; return; }
+    if (t) commit(() => { t.name = name; });
+    closeSheet();
+  },
+  delTrip: () => {
+    const t = curTrip(); if (!t) return; const d = tripData(t.id);
+    confirmSheet('Xoá chuyến', `Xoá <b>${esc(t.name)}</b> cùng ${d.ex.length} khoản chi và ${d.pay.length} thanh toán?${SC.on ? ' Sẽ xoá trên mọi máy đã đồng bộ.' : ''} Không hoàn tác được.`, 'Xoá chuyến', () => {
+      const id = t.id;
+      commit(() => { S.trips = S.trips.filter(x => x.id !== id); purgeOrphans(S); fixCurrentTrip(); });
+      toast('Đã xoá chuyến');
+    });
+  },
+  confirmYes: b => { if (!armed(b)) return; const f = sheetCtx && sheetCtx.onYes; closeSheet(); if (f) f(); },
+  addMember: () => {
+    const t = curTrip(), el = $('#newMem'); if (!t || !el) return;
+    const name = sStr(el.value, 40); if (!name) return el.focus();
+    const mem = S.members.filter(m => m.trip === t.id);
+    if (mem.some(m => m.name.toLocaleLowerCase('vi') === name.toLocaleLowerCase('vi'))) return toast('Đã có người tên này');
+    if (mem.length >= 30) return toast('Tối đa 30 người mỗi chuyến');
+    const used = new Set(mem.map(m => m.c)); let c = 0; while (used.has(c) && c < PALETTE.length - 1) c++;
+    commit(() => S.members.push({ id: newId(), trip: t.id, name, c: used.size >= PALETTE.length ? mem.length % PALETTE.length : c, u: 0 }));
+    toast('Đã thêm ' + name);
+    const n = $('#newMem'); if (n) n.focus();
+  },
+  member: b => memberSheet(b.dataset.id),
+  pickCol: b => { sheetCtx.c = Number(b.dataset.i); document.querySelectorAll('#cCol .dot').forEach(x => x.classList.toggle('on', x === b)); },
+  saveMember: () => {
+    const c = sheetCtx, m = memberOf(c.id), name = sStr($('#mName').value, 40);
+    if (!m) { closeSheet(); return toast('Người này không còn nữa'); }
+    if (!name) { $('#mErr').textContent = 'Nhập tên.'; return; }
+    if (S.members.some(x => x.trip === m.trip && x.id !== m.id && x.name.toLocaleLowerCase('vi') === name.toLocaleLowerCase('vi'))) { $('#mErr').textContent = 'Đã có người tên này.'; return; }
+    commit(() => { m.name = name; m.c = c.c; });
+    closeSheet();
+  },
+  delMember: b => { if (!armed(b)) return; const id = sheetCtx.id; commit(() => { S.members = S.members.filter(x => x.id !== id); }); closeSheet(); toast('Đã xoá'); },
+
+  export: () => doExport(),
+  shareBk: () => shareBackup(),
+  import: () => { const f = $('#fileIn'); f.value = ''; f.click(); },
+  csv: () => exportCsv(),
+  importMerge: () => applyImport('merge'),
+  importReplace: b => { if (!armed(b)) return; applyImport('replace'); },
+  copyTs: () => { const el = $('#tsText'); copyText(el ? el.value : ''); },
+
+  theme: b => { DEV.theme = b.dataset.v; saveDev(); if (DEV.theme !== 'random') THEME = DEV.theme; applyTheme(); render(); },
+  lite: () => { DEV.lite = !DEV.lite; saveDev(); document.body.classList.toggle('lite', DEV.lite); render(); },
+  copyDiag: () => copyText(diagReport(), 'Đã chép báo cáo'),
+  clearDiag: () => { DIAG = []; lsSet(LS_DIAG, '[]'); render(); },
+  eraseAll: () => confirmSheet('Xoá toàn bộ dữ liệu', SC.on ? 'Xoá mọi chuyến, khoản chi và thanh toán <b>trên mọi máy đã đồng bộ</b>. Nên xuất file sao lưu trước. Không hoàn tác được.' : 'Xoá mọi chuyến, khoản chi và thanh toán trên máy này. Nên xuất file sao lưu trước. Không hoàn tác được.', 'Xoá hết', () => {
+    if (SC.on) commit(() => { for (const col of SYNC_COLS) S[col] = []; fixCurrentTrip(); });
+    else { S = emptyState(); takeSnap(); persist(); DEV.trip = ''; DEV.bkN = 0; saveDev(); render(); }
+    TAB = 'ledger'; render(); toast('Đã xoá toàn bộ dữ liệu');
+  }),
+
+  syncSrvShow: () => { const f = $('#srvFld'); if (f) { f.classList.remove('hidden'); const i = $('#ssrv'); if (i && !i.value) i.value = DEFAULT_SERVER; } },
+  syncConnect: async b => {
+    const pin = ($('#spin') || {}).value || '', srvEl = $('#ssrv'), fld = $('#srvFld');
+    const server = srvEl && fld && !fld.classList.contains('hidden') ? srvEl.value.trim().replace(/\/+$/, '') : '';
+    const err = m => { const e = $('#syncErr'); if (e) e.textContent = m; };
+    if (!/^\d{4,8}$/.test(pin.trim())) return err('PIN gồm 4 chữ số.');
+    if (server && !/^https?:\/\/[^\s"'<>]+$/.test(server)) return err('Địa chỉ phải bắt đầu bằng https://');
+    if (!server && !pageServer()) return err(syncErrText({ kind: 'noserver' }));
+    b.disabled = true; b.textContent = 'Đang kết nối…';
+    try {
+      const r = await connectSync(pin.trim(), server);
+      if (r === 'ask') {
+        openSheet(`${sheetHead('Gộp dữ liệu?')}<p class="sm">Máy này và trên mây đều đã có dữ liệu. Bạn muốn làm gì?</p>
+          <div class="btns col"><button class="btn" data-act="connectMerge">Gộp cả hai (nên chọn)</button><button class="btn g" data-act="connectCloud">Dùng bản trên mây</button><button class="btn g" data-act="closeSheet">Huỷ</button></div>
+          <p class="hint">“Dùng bản trên mây” sẽ thay dữ liệu trên máy này.</p>`, { kind: 'connect' });
+      } else {
+        toast(r === 'took' ? 'Đã tải dữ liệu từ mây' : 'Đã kết nối đồng bộ');
+        render(); syncNow(true);
+      }
+    } catch (e) { err(syncErrText(e)); b.disabled = false; b.textContent = 'Kết nối'; }
+  },
+  connectMerge: () => { finishConnect('merge'); closeSheet(); render(); syncNow(true); toast('Đã gộp và bật đồng bộ'); },
+  connectCloud: b => { if (!armed(b)) return; finishConnect('cloud'); closeSheet(); render(); syncNow(true); toast('Đã dùng bản trên mây'); },
+  syncNowBtn: () => syncNow(true),
+  syncOff: b => { if (!armed(b)) return; disconnectSync(); render(); toast('Đã ngắt đồng bộ · dữ liệu vẫn ở trên máy này'); },
+  syncPin: () => { const v = (($('#spin2') || {}).value || '').trim(); if (!/^\d{4,8}$/.test(v)) return toast('PIN gồm 4 chữ số'); SC.pin = v; saveSC(); SY.st = ''; syncNow(true); }
+};
+function diagReport() {
+  return [`Caguman ${VERSION}`, navigator.userAgent,
+    `Lưu trữ: ${STORAGE_OK ? 'ok' : 'bị chặn'} · Lite: ${DEV.lite} · History: ${HIST_OK}`,
+    `Dữ liệu: ${S.trips.length} chuyến, ${S.members.length} người, ${S.expenses.length} khoản, ${S.payments.length} thanh toán, ${Object.keys(S.del).length} dấu xoá`,
+    `Đồng bộ: ${SC.on ? 'bật' : 'tắt'} · ${SY.st} · rev ${SC.rev}`, '',
+    ...DIAG.slice(-30).map(x => new Date(x.t).toISOString() + ' ' + x.m)].join('\n');
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  if (e.target.closest('#scrim')) return;
+  const fn = ACT[b.dataset.act]; if (!fn) return;
+  e.preventDefault();
+  try { const r = fn(b, e); if (r && r.catch) r.catch(err => logDiag('act ' + b.dataset.act + ': ' + (err && err.message || err))); }
+  catch (err) { logDiag('act ' + b.dataset.act + ': ' + (err && err.stack || err)); toast('Có lỗi xảy ra · xem Chẩn đoán trong Cài đặt'); }
+});
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.classList && el.classList.contains('amt')) {
+    const d = digits(el.value); el.value = d ? fmt(Number(d)) : '';
+    if (el.id === 'fAmt') updatePerHead();
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const id = e.target && e.target.id;
+  if (id === 'newMem') { e.preventDefault(); ACT.addMember(); }
+  else if (id === 'spin') { e.preventDefault(); const b = document.querySelector('[data-act=syncConnect]'); if (b) b.click(); }
+});
+$('#scrim').addEventListener('click', () => closeSheet());
+$('#fileIn').addEventListener('change', e => { const f = [...(e.target.files || [])]; e.target.value = ''; if (f.length) readImport(f); });
+
+/* ---------- stability: crash detection, visibility, timers ---------- */
+function markVis() { lsSet(LS_VIS, JSON.stringify({ vis: document.visibilityState === 'hidden' ? 0 : 1, t: Date.now() })); }
+function checkCrash() {
+  let o = null; try { o = JSON.parse(lsGet(LS_VIS) || 'null'); } catch (e) { /* ignore */ }
+  if (isObj(o) && o.vis === 1 && Date.now() - sTs(o.t) < 10 * 60e3) {
+    CRASHED = true; logDiag('last session closed while open');
+    if (!DEV.lite) { DEV.lite = true; saveDev(); }
+  }
+  markVis();
+}
+document.addEventListener('visibilitychange', () => {
+  markVis();
+  if (document.visibilityState === 'hidden') flushOnHide();
+  else { updateScene(); if (!isTyping()) render(); if (SC.on) syncNow(false); }
+});
+window.addEventListener('pagehide', () => { lsSet(LS_VIS, JSON.stringify({ vis: 0, t: Date.now() })); flushOnHide(); });
+window.addEventListener('online', () => { if (SC.on) syncNow(false); });
+window.addEventListener('error', e => logDiag('error: ' + (e.message || '') + ' @' + (e.lineno || '')));
+window.addEventListener('unhandledrejection', e => logDiag('promise: ' + (e.reason && (e.reason.message || e.reason.kind) || e.reason)));
+function storageBanner() { const b = $('#banner'); if (b) { b.textContent = 'Không lưu được trên máy này — hãy xuất file sao lưu.'; b.classList.remove('hidden'); } }
+
+/* ---------- start ---------- */
+function start() {
+  loadAll();
+  checkCrash();
+  document.body.classList.toggle('lite', DEV.lite);
+  pickTheme();
+  initHistory();
+  render();
+  if (!STORAGE_OK) storageBanner();
+  if (CRASHED) toast('Lần trước ứng dụng bị đóng bất ngờ · đã bật Chế độ nhẹ', 4000);
+  setSync(SC.on ? 'busy' : 'off');
+  if (SC.on) syncNow(false);
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    markVis(); updateScene();
+    if (!isTyping()) render();
+    if (SC.on) syncNow(false);
+  }, 30000);
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* ignore */ }
+  try { if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) { /* ignore */ }
+}
+
+'use strict';
+/* ===== io.js — export, share, import (merge / replace), old trip-ledger files, CSV ===== */
+function stampName() { const d = new Date(); return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`; }
+const backupText = () => JSON.stringify({ app: APP_ID, v: 1, exported: new Date().toISOString(), data: sanitizeState(S) });
+function download(name, text, type) {
+  try {
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = document.createElement('a'); a.href = url; a.download = name; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    return true;
+  } catch (e) { logDiag('download: ' + (e && e.message)); return false; }
+}
+function backedUp() { DEV.bkAt = Date.now(); DEV.bkN = 0; saveDev(); render(); }
+function doExport() {
+  const txt = backupText();
+  if (download(`caguman-backup-${stampName()}.json`, txt, 'application/json')) { backedUp(); toast('Đã xuất file sao lưu'); }
+  else textSheet('Sao lưu', txt, 'Không tải file được. Hãy chép đoạn dưới và lưu lại.');
+}
+async function shareBackup() {
+  const txt = backupText(), name = `caguman-backup-${stampName()}.json`;
+  try {
+    const f = new File([txt], name, { type: 'application/json' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: 'Sao lưu sổ chi tiêu' }); backedUp(); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; logDiag('share: ' + (e && e.message)); }
+  doExport();
+}
+function csvCell(v) { const s = String(v == null ? '' : v); return /[",\n;]/.test(s) || /^[=+\-@]/.test(s) ? '"' + (/^[=+\-@]/.test(s) ? "'" : '') + s.replace(/"/g, '""') + '"' : s; }
+function exportCsv() {
+  const t = curTrip(); if (!t) return toast('Chưa có chuyến nào');
+  const d = tripData(t.id), rows = [['Loại', 'Ngày', 'Nội dung', 'Số tiền', 'Người trả', 'Chia cho / Người nhận']];
+  [...d.ex].sort((a, b) => dayOfItem(a).localeCompare(dayOfItem(b)) || (a.at || 0) - (b.at || 0))
+    .forEach(e => rows.push(['Chi', dayOfItem(e), e.desc, e.amount, nameOf(e.payer), e.split.map(nameOf).join(', ')]));
+  d.pay.forEach(p => rows.push(['Thanh toán', dayOfItem(p), '', p.amount, nameOf(p.from), nameOf(p.to)]));
+  const txt = '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const slug = t.name.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 30) || 'chuyen';
+  if (download(`chi-tieu-${slug}-${stampName()}.csv`, txt, 'text/csv')) toast('Đã xuất CSV');
+  else textSheet('CSV', txt);
+}
+
+/* ---------- old "Sổ chi tiêu chuyến đi" files: {app:'trip-ledger', people, expenses, settlements} ---------- */
+const hid = (p, s) => p + hashStr(String(s)).replace(/[^A-Za-z0-9]/g, '-');
+function oldTime(id) {
+  const t = parseInt(String(id || '').slice(0, 8), 36);
+  return t > 1.5e12 && t < 4.1e12 ? t : 0;
+}
+function fromLegacy(o) {
+  const tid = 'legacy-trip-ledger', st = emptyState(), ids = new Map();
+  const mid = raw => {
+    const n = sStr(raw, 40); if (!n) return '';
+    if (!ids.has(n)) { const id = hid('lg-', n); ids.set(n, id); st.members.push({ id, trip: tid, name: n, c: (ids.size - 1) % PALETTE.length, u: 1 }); }
+    return ids.get(n);
+  };
+  (Array.isArray(o.people) ? o.people : []).forEach(mid);
+  let first = 0;
+  for (const e of Array.isArray(o.expenses) ? o.expenses : []) {
+    if (!isObj(e) || e.id == null) continue;
+    const at = oldTime(e.id), payer = mid(e.payer), split = (Array.isArray(e.split) ? e.split : []).map(mid).filter(Boolean);
+    const x = sExpense({ id: hid('lx-', e.id), trip: tid, desc: e.desc, amount: e.amount, payer, split, date: at ? keyOf(new Date(at)) : '', at, u: 1 });
+    if (x) { st.expenses.push(x); if (at && (!first || at < first)) first = at; }
+  }
+  for (const p of Array.isArray(o.settlements) ? o.settlements : []) {
+    if (!isObj(p) || p.id == null) continue;
+    const at = oldTime(p.id);
+    const x = sPayment({ id: hid('lp-', p.id), trip: tid, from: mid(p.from), to: mid(p.to), amount: p.amount, date: at ? keyOf(new Date(at)) : '', at, u: 1 });
+    if (x) st.payments.push(x);
+  }
+  st.trips.push({ id: tid, name: 'Chuyến đi (sổ cũ)', at: first, u: 1 });
+  return sanitizeState(st);
+}
+function parseBackup(text) {
+  let o; try { o = JSON.parse(text); } catch (e) { throw 'Không phải file JSON hợp lệ'; }
+  if (isObj(o) && o.app === APP_ID) { if (!isObj(o.data)) throw 'File sao lưu bị hỏng'; return { kind: 'backup', st: sanitizeState(o.data) }; }
+  if (isObj(o) && (o.app === 'trip-ledger' || (!o.app && Array.isArray(o.expenses) && Array.isArray(o.people)))) return { kind: 'legacy', st: fromLegacy(o) };
+  if (isObj(o) && typeof o.app === 'string') throw 'Đây là file của công cụ khác (' + sStr(o.app, 30) + ')';
+  throw 'File không đúng định dạng sổ chi tiêu';
+}
+const countOf = st => `${st.trips.length} chuyến · ${st.expenses.length} khoản chi · ${st.payments.length} thanh toán`;
+let pendingImport = null;
+async function readImport(files) {
+  const res = [];
+  let inc = emptyState();
+  for (const f of files.slice(0, 20)) {
+    try {
+      if (f.size > 15e6) throw 'File quá lớn';
+      const p = parseBackup(await f.text());
+      inc = mergeStates(inc, p.st);
+      res.push({ name: f.name, ok: true, text: (p.kind === 'legacy' ? 'sổ cũ · ' : '') + countOf(p.st) });
+    } catch (e) { res.push({ name: f.name, ok: false, text: typeof e === 'string' ? e : 'Không đọc được file' }); if (typeof e !== 'string') logDiag('import: ' + (e && e.message)); }
+  }
+  const okN = res.filter(r => r.ok).length;
+  const list = res.map(r => `<div class="fl ${r.ok ? '' : 'bad'}"><b>${esc(r.name)}</b><span>${esc(r.text)}</span></div>`).join('');
+  if (!okN) return openSheet(`${sheetHead('Không nhập được')}${list}<div class="btns"><button class="btn g" data-act="closeSheet">Đóng</button></div>`, { kind: 'import' });
+  const m = mergeStates(inc, S);
+  let add = 0, upd = 0;
+  for (const col of SYNC_COLS) {
+    const L = new Map(S[col].map(x => [x.id, x]));
+    for (const x of m[col]) { const o = L.get(x.id); if (!o) add++; else if ((o.u || 0) !== (x.u || 0) || itemKey(o) !== itemKey(x)) upd++; }
+  }
+  pendingImport = inc;
+  openSheet(`${sheetHead('Nhập dữ liệu')}${list}<div class="dash"></div>
+    <p class="sm"><b>Gộp</b>: thêm ${add} mục mới, cập nhật ${upd} mục. Mục trùng tự bỏ qua.</p>
+    <p class="sm"><b>Thay thế</b>: xoá dữ liệu hiện có${SC.on ? ' trên mọi máy đã đồng bộ' : ' trên máy này'} và dùng ${esc(countOf(inc))}.</p>
+    <div class="btns col"><button class="btn" data-act="importMerge">Gộp (nên chọn)</button><button class="btn d" data-act="importReplace">Thay thế toàn bộ</button><button class="btn g" data-act="closeSheet">Huỷ</button></div>`, { kind: 'import' });
+}
+function applyImport(mode) {
+  const inc = pendingImport; pendingImport = null; if (!inc) return closeSheet();
+  const before = S.trips.length;
+  if (mode === 'replace') {
+    const old = idsOf(S), del = mergeStates({ ...emptyState(), del: S.del }, { ...emptyState(), del: inc.del }).del;
+    for (const col of SYNC_COLS) S[col] = inc[col].map(x => ({ ...x }));
+    S.del = del;
+    touchAll(old);
+    DEV.bkN += 1;
+  } else {
+    const m = mergeStates(inc, S);
+    for (const col of SYNC_COLS) S[col] = m[col];
+    S.del = m.del;
+    takeSnap();
+  }
+  if (inc.trips.length === 1 && S.trips.some(t => t.id === inc.trips[0].id)) DEV.trip = inc.trips[0].id;
+  fixCurrentTrip(); saveDev();
+  markDirty(); persist(); if (SC.on) schedSync(300);
+  closeSheet(); TAB = 'ledger'; render(); window.scrollTo(0, 0);
+  toast(mode === 'replace' ? 'Đã thay bằng dữ liệu từ file' : `Đã gộp · ${S.trips.length - before > 0 ? 'thêm ' + (S.trips.length - before) + ' chuyến' : 'xong'}`);
+}
+
+start();
+
+</script>
+</body>
+</html>

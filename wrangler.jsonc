@@ -1,0 +1,20 @@
+{
+  // Caguman: the page in /public + the sync API in worker.js
+  "name": "caguman",
+  "main": "worker.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "not_found_handling": "none"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "caguman-db",
+      // Paste the Database ID from Cloudflare (Storage & Databases → D1 → caguman-db), keep the quotes
+      "database_id": "PASTE-YOUR-DATABASE-ID-HERE"
+    }
+  ]
+}
