@@ -14,7 +14,7 @@
       "binding": "DB",
       "database_name": "caguman-db",
       // Paste the Database ID from Cloudflare (Storage & Databases → D1 → caguman-db), keep the quotes
-      "database_id": "PASTE-YOUR-DATABASE-ID-HERE"
+      "database_id": "bdc73642-8230-4629-b8f5-5d49f4be2d6f"
     }
   ]
 }
